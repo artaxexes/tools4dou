@@ -25,3 +25,11 @@ print "* 3 para DOU3\n";
 print "Digite: ";
 my $jornal = <STDIN>;
 chomp($jornal);
+
+print "\nPagina\n";
+print "* -1 para todas\n";
+print "* 0 para especificar um intervalo\n";
+print "* Numero correspondente ao da pagina desejada\n";
+print "Digite: ";
+my $page = <STDIN>;
+chomp($page);

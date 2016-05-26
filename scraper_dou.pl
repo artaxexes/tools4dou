@@ -45,3 +45,5 @@ chomp($opt_date);
 # Jornal
 my $val_jornal = 1;
 
+# Page
+my $val_page = 1;

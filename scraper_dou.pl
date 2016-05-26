@@ -47,3 +47,9 @@ my $val_jornal = 1;
 
 # Page
 my $val_page = 1;
+
+# Date
+my $val_date = 0;
+while ($val_date == 0) {
+
+}

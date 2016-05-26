@@ -48,6 +48,17 @@ my $val_jornal = 1;
 # Page
 my $val_page = 1;
 
+sub CheckPagesNumber {
+	my @args = @_;
+	my $url = get("http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?jornal=$args[0]&pagina=1&data=$args[1]&captchafield=firistAccess");
+	if ($url =~ /(&totalArquivos=)([0-9]+)"/) {
+		return $2;
+	}
+	else {
+		return -1;
+	}
+}
+
 # Date
 my $val_date = 0;
 while ($val_date == 0) {

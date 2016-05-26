@@ -60,7 +60,31 @@ sub CheckPagesNumber {
 }
 
 # Date
+my $date = "";
+my $date_is_range = 0;
 my $val_date = 0;
 while ($val_date == 0) {
+	if ($opt_date == 1) {
 
+	}
+	elsif ($opt_date == 2) {
+		print "\tDia desejado: ";
+		my $day = <STDIN>;
+		chomp($day);
+		print "\tMes desejado: ";
+		my $month = <STDIN>;
+		chomp($month);
+		print "\tAno desejado: ";
+		my $year = <STDIN>;
+		chomp($year);
+		$date = sprintf("%02d/%02d/%04d", $day, $month, $year);
+		print "\tData desejada: $date\n";
+		$val_date = 1;
+	}
+	elsif ($opt_date == 3) {
+
+	}
+	else {
+
+	}
 }

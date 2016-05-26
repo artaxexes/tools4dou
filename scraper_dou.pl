@@ -11,7 +11,17 @@ use DateTime;
 use LWP::Simple;
 
 print "===== Scraper DOU =====\n";
+print "-----------------------\n";
 
 my $dt = DateTime->now;
 $dt = $dt->dmy("/");
-print "Today: $dt";
+
+print "Jornal\n";
+print "* -1 para todos\n";
+print "* 0 para especificar um intervalo\n";
+print "* 1 para DOU1\n";
+print "* 2 para DOU2\n";
+print "* 3 para DOU3\n";
+print "Digite: ";
+my $jornal = <STDIN>;
+chomp($jornal);

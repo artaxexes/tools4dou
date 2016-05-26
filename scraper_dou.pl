@@ -40,4 +40,8 @@ print "* 2 para especificar data\n";
 print "* 3 para especificar um intervalo\n";
 print "Digite: ";
 my $opt_date = <STDIN>;
-chomp($opt_date); 
+chomp($opt_date);
+
+# Jornal
+my $val_jornal = 1;
+

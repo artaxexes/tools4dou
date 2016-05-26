@@ -33,3 +33,11 @@ print "* Numero correspondente ao da pagina desejada\n";
 print "Digite: ";
 my $page = <STDIN>;
 chomp($page);
+
+print "\nData\n";
+print "* 1 para hoje\n";
+print "* 2 para especificar data\n";
+print "* 3 para especificar um intervalo\n";
+print "Digite: ";
+my $opt_date = <STDIN>;
+chomp($opt_date); 

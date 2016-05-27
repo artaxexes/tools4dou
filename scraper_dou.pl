@@ -125,4 +125,10 @@ if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
 	unless(-e $directory or mkdir($directory, 0755)) {
 		die "Nao foi possivel criar $directory\n";
 	}
+	if ($page == -1) {
+		my $pagesNumber = CheckPagesNumber($jornal, $date);
+		for (my $index = 1; $index <= $pagesNumber; $index++) {
+			my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $jornal, $index, $date);
+		}
+	}
 }

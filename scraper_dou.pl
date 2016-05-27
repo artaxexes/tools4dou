@@ -114,6 +114,6 @@ while ($val_date == 0) {
 		$val_date = 1;
 	}
 	else {
-
+		print "Opcao invalida para data\n";
 	}
 }

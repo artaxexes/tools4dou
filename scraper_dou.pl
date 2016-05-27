@@ -84,7 +84,27 @@ while ($val_date == 0) {
 		$val_date = 1;
 	}
 	elsif ($opt_date == 3) {
-
+		$date_is_range = 1;
+		# Initial date
+		print "Dia inicial: ";
+		my $init_day = <STDIN>;
+		chomp($init_day);
+		print "Mes inicial: ";
+		my $init_month = <STDIN>;
+		chomp($init_month);
+		print "Ano inicial: ";
+		my $init_year = <STDIN>;
+		chomp($init_year);
+		# Final date
+		print "Dia final: ";
+		my $final_day = <STDIN>;
+		chomp($final_day);
+		print "Mes final: ";
+		my $final_month = <STDIN>;
+		chomp($final_month);
+		print "Ano final: ";
+		my $final_year = <STDIN>;
+		chomp($final_year);
 	}
 	else {
 

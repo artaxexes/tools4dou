@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
-BEGIN {
-	die "Esse script faz uso do modulo DateTime\nInstale-o com o comando:\ncpan DateTime\n" unless (eval{require DateTime});
-	die "Esse script faz uso do modulo LWP::Simple\nInstale-o com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
-}
-
 use strict;
 use warnings;
-use DateTime;
+use Net::Ping;
 use LWP::Simple;
+
+BEGIN {
+	die "Antes de executar, instale o modulo Net::Ping com o comando:\ncpan Net::Ping\n" unless (eval{require Net::Ping});
+	die "Antes de executar, instale o modulo LWP::Simple com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
+}
 
 print "===== Scraper DOU =====\n";
 print "-----------------------\n";

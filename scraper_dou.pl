@@ -105,6 +105,13 @@ while ($val_date == 0) {
 		print "Ano final: ";
 		my $final_year = <STDIN>;
 		chomp($final_year);
+		my $init_date = sprintf("%02d/%02d/%04d", $init_day, $init_month, $init_year);
+		my $final_date = sprintf("%02d/%02d/%04d", $final_day, $final_month, $final_year);
+		my $init_date_obj = DateTime->new(year => $init_year, month => $init_month, day => $init_day);
+		my $final_date_obj = DateTime->new(year => $final_year, month => $final_month, day => $final_day);
+		print $final_date_obj->subtract_datetime($init_date_obj);
+		print "\tIntervalo de data desejado: $init_date a $final_date";
+		$val_date = 1;
 	}
 	else {
 

@@ -121,7 +121,7 @@ while ($val_date == 0) {
 if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
 	print "Argumentos ok, let's do it!\n";
 	my $date_string = localtime();
-	my $directory = Scraper_DOU" . $date_string;
+	my $directory = "Scraper_DOU" . $date_string;
 	unless(-e $directory or mkdir($directory, 0755)) {
 		die "Nao foi possivel criar $directory\n";
 	}
@@ -138,8 +138,8 @@ if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
 		print "Tente depois\n";
 	}
 	else {
-		my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $jornal, $index, $date);
-		my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $jornal, $index);
+		my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $jornal, $page, $date);
+		my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $jornal, $page);
 		getstore($url, $directory . "/" . $file);
 		print "Salvando arquivo PDF $directory/$file\n";
 	}

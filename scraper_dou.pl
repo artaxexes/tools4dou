@@ -26,6 +26,27 @@ my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(tim
 my $dt = sprintf("%02d/%02d/%04d", $mday, $mon + 1, $year + 1900);
 print "Data/hora do sistema: $dt, $hour:$min:$sec\n";
 
+# Input options
+my $pattern = "(0|dou[1-3]);(-1|[0-9]+);(0|1|[0-9]{2}\/[0-9]{2}\/[0-9]{4})";
+my $val_string = 0;
+while ($val_string == 0) {
+	print "\n\nPadrao para download do DOU com tres variaveis: jornal;pagina;data\n";
+	print "Opcoes aceitas para cada variavel:\n";
+	print "jornal = 0 ou dou1 ou dou2 ou dou3; onde 0 indica download de todos os DOUs e dou1/dou2/dou3 indica o jornal correspondente\n";
+	print "pagina = -1 ou #pagina; onde -1 indica download de todas as paginas e #pagina o numero correspondente da pagina\n";
+	print "data = 0 ou 1 ou dd/mm/aaaa; onde 0 indica todas as datas, 1 indica hoje e dd/mm/aaaa indica uma data valida no formato especificado\n";
+	print "Digite a string: ";
+	my $input = <STDIN>;
+	chomp($input);
+	if ($input =~ m/^$pattern$/) {
+		print "$1\n$2\n$3\n";
+		$val_string = 1;
+	}
+	else {
+		print "\nString fora do padrao, leia atentamente as instrucoes!\n\n";
+	}
+}
+
 print "Jornal\n";
 print "* -1 para todos\n";
 print "* 0 para especificar um intervalo\n";

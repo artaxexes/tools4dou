@@ -65,7 +65,9 @@ my $date_is_range = 0;
 my $val_date = 0;
 while ($val_date == 0) {
 	if ($opt_date == 1) {
-
+		$date = sprintf("%02d/%02d/%s", localtime[3], localtime[4], localtime[5] + 1900);
+		print "Hoje: $date\n";
+		$val_date = 1;
 	}
 	elsif ($opt_date == 2) {
 		print "\tDia desejado: ";

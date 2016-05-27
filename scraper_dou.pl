@@ -129,6 +129,7 @@ if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
 		my $pagesNumber = CheckPagesNumber($jornal, $date);
 		for (my $index = 1; $index <= $pagesNumber; $index++) {
 			my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $jornal, $index, $date);
+			my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $jornal, $index);
 		}
 	}
 }

@@ -144,3 +144,4 @@ if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
 		print "Salvando arquivo PDF $directory/$file\n";
 	}
 }
+print "Pronto!\n";

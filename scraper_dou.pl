@@ -10,13 +10,21 @@ BEGIN {
 	die "Antes de executar, instale o modulo LWP::Simple com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
 }
 
-print "===== Scraper DOU =====\n";
-print "-----------------------\n";
+print "========================= Scraper DOU =========================\n";
+print "---------------------------------------------------------------\n";
 
+# Check a Imprensa Nacional host for reachability
+my $host = "portal.imprensanacional.gov.br";
+my $p = Net::Ping->new();
+print "Verificando conexao com http://$host\n";
+die "http://$host esta offline\n" unless $p->ping($host);
+print "http://$host esta online\n";
+$p->close();
+
+# System datetime
 my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
 my $dt = sprintf("%02d/%02d/%04d", $mday, $mon + 1, $year + 1900);
 print "Data/hora do sistema: $dt, $hour:$min:$sec\n";
-die "Testing system date\n";
 
 print "Jornal\n";
 print "* -1 para todos\n";

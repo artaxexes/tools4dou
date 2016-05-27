@@ -117,3 +117,12 @@ while ($val_date == 0) {
 		print "Opcao invalida para data\n";
 	}
 }
+
+if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
+	print "Argumentos ok, let's do it!\n";
+	my $date_string = localtime();
+	my $directory = Scraper_DOU" . $date_string;
+	unless(-e $directory or mkdir($directory, 0755)) {
+		die "Nao foi possivel criar $directory\n";
+	}
+}

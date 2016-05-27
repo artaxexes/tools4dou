@@ -1,6 +1,8 @@
 # Scraper DOU
-
- 
+<br/>
+<br/>
+<br/>
+##### [pt-br] 
 
 `scraper_dou` é um software escrito em [perl](http://www.perl.org "The Perl Programming Language") :camel: para web scraping, que consiste em uma técnica utilizada na computação para extrair informações de websites, nesse caso do website do DOU.
 
@@ -29,9 +31,10 @@ Se você não os tiver, instale-os:
 Mais informações [no site do CPAN](http://www.cpan.org/modules/INSTALL.html "Comprehensive Perl Archive Network - How to install CPAN modules")
 
 Leia cuidadosamente e digite apenas o que for pedido. Aproveite! :grin:
-
- 
-
+<br/>
+<br/>
+<br/>
+<br/>
 ##### [en-us]
 
 `scraper_dou` is a software written in [perl](http://www.perl.org "The Perl Programming Language") :camel: for web scraping, which consists a computer software technique of extracting information from websites, in this case the DOU website.

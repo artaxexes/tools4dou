@@ -14,9 +14,9 @@ Para iniciar basta executar o arquivo `scraper_dou.pl` usando [perl](http://www.
 
 ```perl scraper_dou.pl```
 
-Esse script [perl](http://www.perl.org "The Perl Programming Language") :camel: utiliza os módulos [`DateTime`](http://github.com/houseabsolute/DateTime.pm "A date and time object for Perl") :octocat: e [`LWP::Simple`](http://github.com/libwww-perl/libwww-perl "Simple procedural interface to LWP") :octocat:, verifique se os possui antes de executar, fazendo:
+Esse script [perl](http://www.perl.org "The Perl Programming Language") :camel: utiliza os módulos [`Net::Ping`](http://perldoc.perl.org/Net/Ping.html "Net::Ping - check a remote host for reachability") :octocat: e [`LWP::Simple`](http://github.com/libwww-perl/libwww-perl "Simple procedural interface to LWP") :octocat:, verifique se os possui antes de executar, fazendo:
 
-```cpan -l | grep ^DateTime[^:]```
+```cpan -l | grep ^Net::Ping[^:]```
 
 ```cpan -l | grep ^LWP::Simple[^:]```
 
@@ -24,7 +24,7 @@ Mais informações na [documentação oficial](http://perldoc.perl.org/perlfaq3.
 
 Se você não os tiver, instale-os:
 
-```cpan DateTime````
+```cpan Net::Ping````
 
 ```cpan LWP::Simple```
 
@@ -47,9 +47,9 @@ To start simply run the file `scraper_dou.pl` using [perl](http://www.perl.org "
 
 ```perl scraper_dou.pl```
 
-This [perl](http://www.perl.org "The Perl Programming Language") :camel: script uses [`DateTime`](http://github.com/houseabsolute/DateTime.pm "A date and time object for Perl") :octocat: and [`LWP::Simple`](http://github.com/libwww-perl/libwww-perl "Simple procedural interface to LWP") :octocat: modules, make sure you have them installed before running, doing:
+This [perl](http://www.perl.org "The Perl Programming Language") :camel: script uses [`Net::Ping`](http://perldoc.perl.org/Net/Ping.html "Net::Ping - check a remote host for reachability") :octocat: and [`LWP::Simple`](http://github.com/libwww-perl/libwww-perl "Simple procedural interface to LWP") :octocat: modules, make sure you have them installed before running, doing:
 
-```cpan -l | grep ^DateTime[^:]```
+```cpan -l | grep ^Net::Ping[^:]```
 
 ```cpan -l | grep ^LWP::Simple[^:]```
 
@@ -57,7 +57,7 @@ More info in the [official docs](http://perldoc.perl.org/perlfaq3.html#How-do-I-
 
 If you do not have them, install:
 
-```cpan DateTime```
+```cpan Net::Ping```
 
 ```cpan LWP::Simple```
 

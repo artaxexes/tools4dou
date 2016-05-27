@@ -13,8 +13,10 @@ use LWP::Simple;
 print "===== Scraper DOU =====\n";
 print "-----------------------\n";
 
-my $dt = DateTime->now;
-$dt = $dt->dmy("/");
+my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
+my $dt = sprintf("%02d/%02d/%04d", $mday, $mon + 1, $year + 1900);
+print "Data/hora do sistema: $dt, $hour:$min:$sec\n";
+die "Testing system date\n";
 
 print "Jornal\n";
 print "* -1 para todos\n";

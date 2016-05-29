@@ -27,49 +27,37 @@ my $dt = sprintf("%02d/%02d/%04d", $mday, $mon + 1, $year + 1900);
 print "Data/hora do sistema: $dt, $hour:$min:$sec\n";
 
 # Input options
-my $pattern = "(0|dou[1-3]);(-1|[0-9]+);(0|1|[0-9]{2}\/[0-9]{2}\/[0-9]{4})";
+my $pattern = "(range|all|dou[1-3]);(range|all|[0-9]+);(range|all|[0-9]{2}\/[0-9]{2}\/[0-9]{4})";
+my $journal = "";
+my $page = "";
+my $date = "";
 my $val_string = 0;
 while ($val_string == 0) {
 	print "\n\nPadrao para download do DOU com tres variaveis: jornal;pagina;data\n";
 	print "Opcoes aceitas para cada variavel:\n";
-	print "jornal = 0 ou dou1 ou dou2 ou dou3; onde 0 indica download de todos os DOUs e dou1/dou2/dou3 indica o jornal correspondente\n";
-	print "pagina = -1 ou #pagina; onde -1 indica download de todas as paginas e #pagina o numero correspondente da pagina\n";
-	print "data = 0 ou 1 ou dd/mm/aaaa; onde 0 indica todas as datas, 1 indica hoje e dd/mm/aaaa indica uma data valida no formato especificado\n";
-	print "Digite a string: ";
+	print "jornal = range ou all ou dou1 ou dou2 ou dou3; onde range indica um intervalo de jornais, all indica todos os jornais, dou1/dou2/dou3 indica o jornal correspondente\n";
+	print "pagina = range ou all ou numero da pagina; onde range indica um intervalo de paginas, all indica todas as paginas, numero da pagina indica a pagina correspondente\n";
+	print "data = range ou all ou dd/mm/aaaa; onde range indica um intervalo de datas, all indica todas as datas, dd/mm/aaaa indica uma data valida no formato especificado\n";
+	print "Digite sua string para download: ";
 	my $input = <STDIN>;
 	chomp($input);
 	if ($input =~ m/^$pattern$/) {
-		print "$1\n$2\n$3\n";
+		$journal =  $1;
+        $page = $2;
+        $date = $3;
 		$val_string = 1;
 	}
 	else {
-		print "\nString fora do padrao, leia atentamente as instrucoes!\n\n";
+		print "\nString fora do padrao, leia atentamente as instrucoes e digite novamente!\n";
 	}
 }
 
-print "Jornal\n";
-print "* -1 para todos\n";
-print "* 0 para especificar um intervalo\n";
-print "* 1 para DOU1\n";
-print "* 2 para DOU2\n";
-print "* 3 para DOU3\n";
-print "Digite: ";
 my $jornal = <STDIN>;
 chomp($jornal);
 
-print "\nPagina\n";
-print "* -1 para todas\n";
-print "* 0 para especificar um intervalo\n";
-print "* Numero correspondente ao da pagina desejada\n";
-print "Digite: ";
 my $page = <STDIN>;
 chomp($page);
 
-print "\nData\n";
-print "* 1 para hoje\n";
-print "* 2 para especificar data\n";
-print "* 3 para especificar um intervalo\n";
-print "Digite: ";
 my $opt_date = <STDIN>;
 chomp($opt_date);
 

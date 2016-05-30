@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+use 5.010;
 use strict;
 use warnings;
 use Net::Ping;
@@ -10,75 +11,53 @@ BEGIN {
 	die "Antes de executar, instale o modulo LWP::Simple com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
 }
 
-print "========================= Scraper DOU =========================\n";
-print "---------------------------------------------------------------\n";
+say "========================= Scraper DOU =========================";
+say "---------------------------------------------------------------";
 
 # Check a Imprensa Nacional host for reachability
 my $host = "portal.imprensanacional.gov.br";
 my $p = Net::Ping->new();
-print "Verificando conexao com http://$host\n";
+say "Verificando conexao com http://$host";
 die "http://$host esta offline\n" unless $p->ping($host);
-print "http://$host esta online\n";
+say "http://$host esta online";
 $p->close();
 
 # System datetime
 my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
 my $dt = sprintf("%02d/%02d/%04d", $mday, $mon + 1, $year + 1900);
-print "Data/hora do sistema: $dt, $hour:$min:$sec\n";
+say "Data/hora do sistema: $dt, $hour:$min:$sec";
 
 # Input options
-my $pattern = "(range|all|dou[1-3]);(range|all|[0-9]+);(range|all|[0-9]{2}\/[0-9]{2}\/[0-9]{4})";
-my $journal = "";
-my $page = "";
-my $date = "";
-my $val_string = 0;
-while ($val_string == 0) {
-	print "\n\nPadrao para download do DOU com tres variaveis: jornal;pagina;data\n";
-	print "Opcoes aceitas para cada variavel:\n";
-	print "jornal = range ou all ou dou1 ou dou2 ou dou3; onde range indica um intervalo de jornais, all indica todos os jornais, dou1/dou2/dou3 indica o jornal correspondente\n";
-	print "pagina = range ou all ou numero da pagina; onde range indica um intervalo de paginas, all indica todas as paginas, numero da pagina indica a pagina correspondente\n";
-	print "data = range ou all ou dd/mm/aaaa; onde range indica um intervalo de datas, all indica todas as datas, dd/mm/aaaa indica uma data valida no formato especificado\n";
+my $inputPattern = "(range|all|dou[1-3]);(range|all|[0-9]+);(range|all|[0123][0-9]\/[01][0-9]\/[0-9]{4})";
+my $optJournal = "";
+my $optPage = "";
+my $optDate = "";
+my $valString = 0;
+while ($valString == 0) {
+	say "\nPadrao para download do DOU com tres variaveis: jornal;pagina;data";
+	say "Opcoes aceitas para cada variavel:";
+	say "jornal = range ou all ou dou1 ou dou2 ou dou3; onde range indica um intervalo de jornais, all indica todos os jornais e dou1/dou2/dou3 indica o jornal correspondente";
+	say "pagina = range ou all ou numero da pagina; onde range indica um intervalo de paginas, all indica todas as paginas e numero da pagina indica a pagina correspondente";
+	say "data = range ou all ou dd/mm/aaaa; onde range indica um intervalo de datas, all indica todas as datas e dd/mm/aaaa indica uma data valida no formato especificado";
 	print "Digite sua string para download: ";
 	my $input = <STDIN>;
-	chomp($input);
-	if ($input =~ m/^$pattern$/) {
-		$journal =  $1;
-        $page = $2;
-        $date = $3;
-		$val_string = 1;
+	chomp $input;
+	if ($input =~ m/^$inputPattern$/) {
+		$optJournal =  $1;
+        	$optPage = $2;
+        	$optDate = $3;
+		if ($optDate ne "range" || $optDate ne "all") {
+			$valString = 1 unless DateValidation($optDate);
+		}
 	}
 	else {
-		print "\nString fora do padrao, leia atentamente as instrucoes e digite novamente!\n";
+		say "\nString fora do padrao, leia atentamente as instrucoes e tente novamente!";
 	}
 }
 
-my $jornal = <STDIN>;
-chomp($jornal);
+die "Finish\n";
 
-my $page = <STDIN>;
-chomp($page);
-
-my $opt_date = <STDIN>;
-chomp($opt_date);
-
-# Jornal
-my $val_jornal = 1;
-
-# Page
-my $val_page = 1;
-
-sub CheckPagesNumber {
-	my @args = @_;
-	my $url = get("http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?jornal=$args[0]&pagina=1&data=$args[1]&captchafield=firistAccess");
-	if ($url =~ /(&totalArquivos=)([0-9]+)"/) {
-		return $2;
-	}
-	else {
-		return -1;
-	}
-}
-
-# Date
+# Date validation
 my $date = "";
 my $date_is_range = 0;
 my $val_date = 0;
@@ -137,7 +116,7 @@ while ($val_date == 0) {
 	}
 }
 
-if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
+if ($val_journal == 1 and $val_page == 1 and $val_date == 1) {
 	print "Argumentos ok, let's do it!\n";
 	my $date_string = localtime();
 	my $directory = "Scraper_DOU" . $date_string;
@@ -145,10 +124,10 @@ if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
 		die "Nao foi possivel criar $directory\n";
 	}
 	if ($page == -1) {
-		my $pagesNumber = CheckPagesNumber($jornal, $date);
+		my $pagesNumber = CheckPagesNumber($journal, $date);
 		for (my $index = 1; $index <= $pagesNumber; $index++) {
-			my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $jornal, $index, $date);
-			my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $jornal, $index);
+			my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $journal, $index, $date);
+			my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $journal, $index);
 			getstore($url, $directory . "/" . $file);
 			print "Salvando arquivo PDF $directory/$file\n";
 		}
@@ -157,10 +136,35 @@ if ($val_jornal == 1 and $val_page == 1 and $val_date == 1) {
 		print "Tente depois\n";
 	}
 	else {
-		my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $jornal, $page, $date);
-		my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $jornal, $page);
+		my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $journal, $page, $date);
+		my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $journal, $page);
 		getstore($url, $directory . "/" . $file);
 		print "Salvando arquivo PDF $directory/$file\n";
 	}
 }
 print "Pronto!\n";
+
+sub DateValidation {
+	if (@_ =~ m/^([0123][0-9])\/([01][0-9])\/([0-9]{4})$/) {
+		my ($day, $month, $year) = @_
+		if ($month >= 1 && $month <= 12) {
+			
+		}
+	}
+
+}
+
+sub CheckPagesDOU {
+	my ($journal, $date) = @_;
+	my $url = get("http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?jornal=$journal&pagina=1&data=$date&captchafield=firistAccess");
+	if ($url =~ /(&totalArquivos=)([0-9]+)"/) {
+		return $2;
+	}
+	else {
+		return -1;
+	}
+}
+
+sub DownloadDOU {
+
+}

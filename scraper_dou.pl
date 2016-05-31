@@ -47,7 +47,7 @@ while ($valString == 0) {
         	$optPage = $2;
         	$optDate = $3;
 		if ($optDate ne "range" && $optDate ne "all" && $optDate ne "today") {
-			$valString = 1 unless !DateValidation(DateSplit($optDate));
+			$valString = 1 unless !date_val(date_split($optDate));
 		}
 		else {
 			$valString = 1;
@@ -127,7 +127,7 @@ if ($val_journal == 1 and $val_page == 1 and $val_date == 1) {
 		die "Nao foi possivel criar $directory\n";
 	}
 	if ($page == -1) {
-		my $pagesNumber = CheckPagesNumber($journal, $date);
+		my $pagesNumber = dou_pages($journal, $date);
 		for (my $index = 1; $index <= $pagesNumber; $index++) {
 			my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $journal, $index, $date);
 			my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $journal, $index);
@@ -145,19 +145,16 @@ if ($val_journal == 1 and $val_page == 1 and $val_date == 1) {
 		print "Salvando arquivo PDF $directory/$file\n";
 	}
 }
+
 print "Pronto!\n";
 
-sub DateValidation {
-	if (@_ =~ m/^([0123][0-9])\/([01][0-9])\/([0-9]{4})$/) {
-		my ($day, $month, $year) = @_
-		if ($month >= 1 && $month <= 12) {
-			
-		}
-	}
+sub date_split {
+
+sub date_val {
 
 }
 
-sub CheckPagesDOU {
+sub dou_pages {
 	my ($journal, $date) = @_;
 	my $url = get("http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?jornal=$journal&pagina=1&data=$date&captchafield=firistAccess");
 	if ($url =~ /(&totalArquivos=)([0-9]+)"/) {
@@ -168,6 +165,6 @@ sub CheckPagesDOU {
 	}
 }
 
-sub DownloadDOU {
+sub dou_download {
 
 }

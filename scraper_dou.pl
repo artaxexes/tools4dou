@@ -154,23 +154,26 @@ sub date_split {
 
 sub date_val {
 	my ($_day, $_month, $_year) = @_;
-	if ($_year >= 1990 && $_year <= $year) {
-		if ($_month ~~ (1, 3, 5, 7, 8, 10, 12)) {
-			return 1 unless ($_day >= 1 && $_day <= 31);
-		}
-		elsif ($_month ~~ (4, 6, 9, 11)) {
-			return 1 unless ($_day >= 1 && $_day <= 30);
-		}
-		else {
-			if (($_year % 4 == 0 && $_year % 100  != 0) || $_year % 400 == 0) {
-				return 1 unless ($_day >= 1 && $_day <= 29);
-			}
-			else {
-				return 1 unless ($_day >= 1 && $_day <= 28);
-			}
-		}
-	}
-	return 0;
+        print "\n$_day/$_month/$_year\n";
+        if ($_year >= 1990 && $_year <= $year) {
+                print "\n$_year\n";
+                if ($_month ~~ [1, 3, 5, 7, 8, 10, 12]) {
+                        iprint "\n$month\n";
+                        return 1 unless !($_day >= 1 && $_day <= 31);
+                }
+                elsif ($_month ~~ [4, 6, 9, 11]) {
+                        return 1 unless !($_day >= 1 && $_day <= 30);
+                }
+                else {
+                        if (($_year % 4 == 0 && $_year % 100  != 0) || $_year % 400 == 0) {
+                                return 1 unless !($_day >= 1 && $_day <= 29);
+                        }
+                        else {
+                                return 1 unless !($_day >= 1 && $_day <= 28);
+                        }
+                }
+        }
+        return 0;
 }
 
 sub dou_pages {

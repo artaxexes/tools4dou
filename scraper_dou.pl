@@ -149,14 +149,28 @@ if ($val_journal == 1 and $val_page == 1 and $val_date == 1) {
 print "Pronto!\n";
 
 sub date_split {
-	my $day = substr $3, 0, 2;
-        my $month = substr $3, 3, 2;
-        my $year = substr $3, 6, 4;
-        return ($day, $month, $year);
+        return ((substr $3, 0, 2), (substr $3, 3, 2), (substr $3, 6, 4));
 }
 
 sub date_val {
-
+	my ($_day, $_month, $_year) = @_;
+	if ($_year >= 1990 && $_year <= $year) {
+		if ($_month ~~ (1, 3, 5, 7, 8, 10, 12)) {
+			return 1 unless ($_day >= 1 && $_day <= 31);
+		}
+		elsif ($_month ~~ (4, 6, 9, 11)) {
+			return 1 unless ($_day >= 1 && $_day <= 30);
+		}
+		else {
+			if (($_year % 4 == 0 && $_year % 100  != 0) || $_year % 400 == 0) {
+				return 1 unless ($_day >= 1 && $_day <= 29);
+			}
+			else {
+				return 1 unless ($_day >= 1 && $_day <= 28);
+			}
+		}
+	}
+	return 0;
 }
 
 sub dou_pages {

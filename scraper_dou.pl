@@ -28,7 +28,7 @@ my $dt = sprintf("%02d/%02d/%04d", $mday, $mon + 1, $year + 1900);
 say "Data/hora do sistema: $dt, $hour:$min:$sec";
 
 # Input options
-my $inputPattern = "(range|all|dou[1-3]);(range|all|[0-9]+);(range|all|[0123][0-9]\/[01][0-9]\/[0-9]{4})";
+my $inputPattern = "(range|all|dou[1-3]);(range|all|[0-9]+);(range|all|today|[0123][0-9]\/[01][0-9]\/[0-9]{4})";
 my $optJournal = "";
 my $optPage = "";
 my $optDate = "";

@@ -46,8 +46,11 @@ while ($valString == 0) {
 		$optJournal =  $1;
         	$optPage = $2;
         	$optDate = $3;
-		if ($optDate ne "range" || $optDate ne "all") {
-			$valString = 1 unless DateValidation($optDate);
+		if ($optDate ne "range" && $optDate ne "all" && $optDate ne "today") {
+			$valString = 1 unless !DateValidation(DateSplit($optDate));
+		}
+		else {
+			$valString = 1;
 		}
 	}
 	else {

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use 5.010;
+use 5.22.1;
 use strict;
 use warnings;
 use Net::Ping;

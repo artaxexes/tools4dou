@@ -36,12 +36,11 @@ my $valString = 0;
 while ($valString == 0) {
 	say "\nPadrao para download do DOU com tres variaveis: jornal;pagina;data";
 	say "Opcoes aceitas para cada variavel:";
-	say "jornal = range ou all ou dou1 ou dou2 ou dou3; onde range indica um intervalo de jornais, all indica todos os jornais e dou1/dou2/dou3 indica o jornal correspondente";
-	say "pagina = range ou all ou numero da pagina; onde range indica um intervalo de paginas, all indica todas as paginas e numero da pagina indica a pagina correspondente";
-	say "data = range ou all ou dd/mm/aaaa; onde range indica um intervalo de datas, all indica todas as datas e dd/mm/aaaa indica uma data valida no formato especificado";
+	say "* jornal = range ou all ou dou1 ou dou2 ou dou3; onde range indica um intervalo de jornais, all indica todos os jornais e dou1/dou2/dou3 indica o jornal correspondente";
+	say "* pagina = range ou all ou numero da pagina; onde range indica um intervalo de paginas, all indica todas as paginas e numero da pagina indica a pagina correspondente";
+	say "* data = range ou all ou today ou dd/mm/aaaa; onde range indica um intervalo de datas, all indica todas as datas e dd/mm/aaaa indica uma data valida no formato especificado";
 	print "Digite sua string para download: ";
-	my $input = <STDIN>;
-	chomp $input;
+	chomp(my $input = <STDIN>);
 	if ($input =~ m/^$inputPattern$/) {
 		$optJournal =  $1;
         	$optPage = $2;

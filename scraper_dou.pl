@@ -25,25 +25,24 @@ $p->close();
 # System datetime
 my ($curr_sec, $curr_min, $curr_hour, $curr_mday, $curr_mon, $curr_year, $curr_wday, $curr_yday, $isdst) = localtime(time);
 my $curr_date = sprintf("%02d/%02d/%04d", $curr_mday, $curr_mon + 1, $curr_year + 1900);
-say sprintf("Data/hora do sistema: %s, %02dh:%02dm%02ds", $curr_date, $curr_hour, $curr_min, $curr_sec);
+say sprintf("Data/hora do sistema: %s %02dh%02dm%02ds", $curr_date, $curr_hour, $curr_min, $curr_sec);
 
 # Input options
-my $input_pattern = "(range|all|dou[1-3]);(range|all|[0-9]+);(range|all|today|[0123][0-9]\/[01][0-9]\/[0-9]{4})";
+my $input_pattern = "(range|all|dou[1-3]), (range|all), (range|all|today|[0123][0-9]\/[01][0-9]\/[0-9]{4})";
 my $opt_journal = "";
 my $opt_page = "";
 my $opt_date = "";
-my $val_string = 1;
+my $val_string = 0;
 while ($val_string == 0) {
-	say "\nPadrao para download do Diario Oficial da Uniao - DOU com tres variaveis: jornal, pagina, data";
+	say "\nDownload do Diario Oficial da Uniao baseado em tres variaveis: jornal, pagina, data";
 	say "Opcoes aceitas para cada variavel:";
 	say "* jornal = range ou all ou dou1 ou dou2 ou dou3";
 	say "\t- range indica um intervalo de jornais";
 	say "\t- all indica todos os jornais";
 	say "\t- dou1 ou dou2 ou dou3 indica o jornal correspondente";
-	say "* pagina = range ou all ou numero da pagina";
+	say "* pagina = range ou all";
 	say "\t- range indica um intervalo de paginas";
 	say "\t- all indica todas as paginas";
-	say "\t- numero da pagina indica a pagina correspondente";
 	say "* data = range ou all ou today ou dd/mm/aaaa";
 	say "\t- range indica um intervalo de datas";
 	say "\t- all indica todas as datas";
@@ -55,8 +54,8 @@ while ($val_string == 0) {
 		$opt_journal =  $1;
 		$opt_page = $2;
 		$opt_date = $3;
-		if ($opt_date ne "range" || $opt_date ne "all" || $opt_date ne "today") {
-			$val_string = 0 unless date_val(date_split($opt_date));
+		if ($opt_date ne "range" && $opt_date ne "all" && $opt_date ne "today") {
+			$val_string = 1 unless !(date_val(date_split($opt_date)));
 		}
 	}
 	else {
@@ -64,16 +63,14 @@ while ($val_string == 0) {
 	}
 }
 
-die "Acabou\n";
+die "\nTesting\n";
 
 # Page options
-my $page = -1;
 my $page_range = 0;
 my $page_init = 0;
 my $page_final = 0;
-my $page_all = 0;
-for ($opt_page) {
-	when ("range") {
+if ($opt_page eq "range") {
+	while ($page_range == 0) {
 		say "\n\tEspecifique o intervalo de pagina desejado informando:";
 		print "\tPagina inicial: ";
 		chomp($page_init = <STDIN>);
@@ -84,65 +81,22 @@ for ($opt_page) {
 			say "\tIntervalo de paginas valido\n";
 		}
 		else {
-			die "\tIntervalo de pagina invalido, tente novamente\n";
+			say "\tIntervalo de paginas invalido, tente novamente";
 		}
-	}
-	when ("all") {
-		print "\tO download de todas as paginas sera feito, tem certeza? [y/n] ";
-		chomp(my $answer = <STDIN>);
-		if ($answer eq y) {
-			$page = 0;
-		}
-		else {
-			die "\tTudo bem, depois continue\n";
-		}
-	}
-	default {
-		$page = $opt_page;
 	}
 }
 
 # Date options
-my $date = "";
 my $date_range = 0;
 my $date_init = "";
 my $date_final = "";
 my $date_all = 0;
-for ($opt_date) {
-	when ("range") {
-	}
-	when ("all) {
-		$date_all = 1;
-		# Implementar download de DOU de todas as datas
-		die "\tOpcao ainda nao implementada\n";
-	}
-	when ("today") {
-		say "Hoje: $curr_date";
-		$date = $curr_date;
-	}
-	default {
-		$date = $3;
-	}
+if ($opt_date eq "range") {
 }
-
-if ($opt_page == -1) {
-		my $pagesNumber = dou_pages($journal, $date);
-		for (my $index = 1; $index <= $pagesNumber; $index++) {
-		}
-	}
-	elsif ($page == 0) {
-		print "Tente depois\n";
-	}
-	else {
-		my $url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%d&captchafield=firistAcces", $journal, $page, $date);
-		my $file = sprintf("%04d_%02d_%02d_DOU%02d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $journal, $page);
-		getstore($url, $directory . "/" . $file);
-		print "Salvando arquivo PDF $directory/$file\n";
-	}
+elsif ($opt_date eq "all") {
 }
 
 say "Just do it";
-
 
 # Download DOU
 for ($opt_date) {
@@ -223,7 +177,7 @@ sub date_split {
 sub date_val {
 	my ($_day, $_month, $_year) = @_;
         print "\n$_day/$_month/$_year\n";
-        if ($_year >= 1990 && $_year <= $year) {
+        if ($_year >= 1990 && $_year <= $curr_year) {
                 if ($_month ~~ [1, 3, 5, 7, 8, 10, 12]) {
                         return 1 unless !($_day >= 1 && $_day <= 31);
                 }
@@ -244,20 +198,20 @@ sub date_val {
 
 # Validation of the date range entered 
 sub date_range {
-	say "\n\tEspecifique o intervalo de data desejado informando:"
+	say "\n\tEspecifique o intervalo de data desejado informando:";
 	print "\tData inicial no modelo dd/mm/aaaa: ";
 	chomp(my $date_init = <STDIN>);
 	print "\tData final tambem no modelo dd/mm/aaaa: ";
 	chomp(my $date_final = <STDIN>);
-	return ($date_init, $date_final) unless !(date_val(date_split($date_init)) && date_val(date_split($date_final)))
+	return ($date_init, $date_final) unless !(date_val(date_split($date_init)) && date_val(date_split($date_final)));
 	die "Intervalo de data invalido\n";
 }
 
 # Directory creation
 sub dir_create {
-	my $_dir = sprintf("scraper_dou_%04d_%02d_%02d_%02d_%02d_%02d", $curr_year + 1900, $curr_month + 1, $curr_mday, $curr_hour, $curr_min, $curr_sec);
+	my $_dir = sprintf("scraper_dou_%04d_%02d_%02d_%02d_%02d_%02d", $curr_year + 1900, $curr_mon + 1, $curr_mday, $curr_hour, $curr_min, $curr_sec);
 	say "Criando diretorio $_dir";
-	mkdir($_dir, 0755)
+	mkdir($_dir, 0755);
 	return $_dir;
 }
 

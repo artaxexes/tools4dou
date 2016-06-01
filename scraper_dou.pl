@@ -24,11 +24,13 @@ $p->close();
 
 # System datetime
 my ($curr_sec, $curr_min, $curr_hour, $curr_mday, $curr_mon, $curr_year, $curr_wday, $curr_yday, $isdst) = localtime(time);
-my $curr_date = sprintf("%02d/%02d/%04d", $curr_mday, $curr_mon + 1, $curr_year + 1900);
+$curr_mon += 1;
+$curr_year += 1900;
+my $curr_date = sprintf("%02d/%02d/%04d", $curr_mday, $curr_mon, $curr_year);
 say sprintf("Data/hora do sistema: %s %02dh%02dm%02ds", $curr_date, $curr_hour, $curr_min, $curr_sec);
 
 # Input options
-my $input_pattern = "(range|all|dou[1-3]), (range|all), (range|all|today|[0123][0-9]\/[01][0-9]\/[0-9]{4})";
+my $input_pattern = "(range|all|dou[1-3]), (range|all), (range|all|today|[0-9]{2}\/[0-9]{2}\/[0-9]{4})";
 my $opt_journal = "";
 my $opt_page = "";
 my $opt_date = "";
@@ -54,16 +56,12 @@ while ($val_string == 0) {
 		$opt_journal =  $1;
 		$opt_page = $2;
 		$opt_date = $3;
-		if ($opt_date ne "range" && $opt_date ne "all" && $opt_date ne "today") {
-			$val_string = 1 unless !(date_val(date_split($opt_date)));
-		}
+		$val_string = 1 if ($opt_date eq "range" || $opt_date eq "all" || $opt_date eq "today" || date_val(date_split($opt_date)));
 	}
 	else {
 		say "\nString fora do padrao, leia atentamente as instrucoes e tente novamente!\n";
 	}
 }
-
-die "\nTesting\n";
 
 # Page options
 my $page_range = 0;
@@ -96,7 +94,7 @@ if ($opt_date eq "range") {
 elsif ($opt_date eq "all") {
 }
 
-say "Just do it";
+say "\nJust do it!\n";
 
 # Download DOU
 for ($opt_date) {
@@ -139,29 +137,29 @@ for ($opt_date) {
 	default {
 		my $_dir = dir_create();
 		if ($opt_journal eq "all" && $opt_page eq "all") {
-			say "Baixando todas as paginas de todos os jornais de $3";
+			say "Baixando todas as paginas de todos os jornais de $opt_date";
 			for (my $_journal = 1; $_journal <= 3; $_journal++){
-				for (my $_page = 1; $_page <= dou_pages($_journal, $3); $_page++) {
-					dou_download($_journal, $_page, $3, $_dir);
+				for (my $_page = 1; $_page <= dou_pages($_journal, $opt_date); $_page++) {
+					dou_download($_journal, $_page, $opt_date, $_dir);
 				}
 			}
 		}
 		elsif ($opt_journal eq "dou1" && $opt_page eq "all") {
-			say "Baixando todas as paginas do jornal $opt_journal de $3";
-			for (my $_page = 1; $_page <= dou_pages(1, $3); $_page++) {
-				dou_download(1, $_page, $3, $_dir);
+			say "Baixando todas as paginas do jornal $opt_journal de $opt_date";
+			for (my $_page = 1; $_page <= dou_pages(1, $opt_date); $_page++) {
+				dou_download(1, $_page, $opt_date, $_dir);
 			}
 		}
 		elsif ($opt_journal eq "dou2" && $opt_page eq "all") {
-			say "Baixando todas as paginas do jornal $opt_journal de $3";
-			for (my $_page = 1; $_page <= dou_pages(2, $3); $_page++) {
-				dou_download(2, $_page, $3, $_dir);
+			say "Baixando todas as paginas do jornal $opt_journal de $opt_date";
+			for (my $_page = 1; $_page <= dou_pages(2, $opt_date); $_page++) {
+				dou_download(2, $_page, $opt_date, $_dir);
 			}
 		}
 		elsif ($opt_journal eq "dou3" && $opt_page eq "all") {
-			say "Baixando todas as paginas do jornal $opt_journal de $3";
-			for (my $_page = 1; $_page <= dou_pages(3, $3); $_page++) {
-				dou_download(3, $_page, $3, $_dir);
+			say "Baixando todas as paginas do jornal $opt_journal de $opt_date";
+			for (my $_page = 1; $_page <= dou_pages(3, $opt_date); $_page++) {
+				dou_download(3, $_page, $opt_date, $_dir);
 			}
 		}
 		say "Finalizado";
@@ -170,26 +168,26 @@ for ($opt_date) {
 
 # Split for date entered by user
 sub date_split {
-        return ((substr $3, 0, 2), (substr $3, 3, 2), (substr $3, 6, 4));
+        return ((substr $opt_date, 0, 2), (substr $opt_date, 3, 2), (substr $opt_date, 6, 4));
 }
 
 # Validation of date entered by user
 sub date_val {
 	my ($_day, $_month, $_year) = @_;
-        print "\n$_day/$_month/$_year\n";
-        if ($_year >= 1990 && $_year <= $curr_year) {
+        say "$_day/$_month/$_year";
+        if ($_year ~~ [1990..$curr_year]) {
                 if ($_month ~~ [1, 3, 5, 7, 8, 10, 12]) {
-                        return 1 unless !($_day >= 1 && $_day <= 31);
+                        return 1 if ($_day ~~ [1..31]);
                 }
                 elsif ($_month ~~ [4, 6, 9, 11]) {
-                        return 1 unless !($_day >= 1 && $_day <= 30);
+                        return 1 if ($_day ~~ [1..30]);
                 }
                 else {
                         if (($_year % 4 == 0 && $_year % 100  != 0) || $_year % 400 == 0) {
-                                return 1 unless !($_day >= 1 && $_day <= 29);
+                                return 1 if ($_day ~~ [1..29]);
                         }
                         else {
-                                return 1 unless !($_day >= 1 && $_day <= 28);
+                                return 1 if ($_day ~~ [1..28]);
                         }
                 }
         }
@@ -209,7 +207,7 @@ sub date_range {
 
 # Directory creation
 sub dir_create {
-	my $_dir = sprintf("scraper_dou_%04d_%02d_%02d_%02d_%02d_%02d", $curr_year + 1900, $curr_mon + 1, $curr_mday, $curr_hour, $curr_min, $curr_sec);
+	my $_dir = sprintf("scraper_dou_%04d_%02d_%02d_%02dh%02dm%02ds", $curr_year, $curr_mon, $curr_mday, $curr_hour, $curr_min, $curr_sec);
 	say "Criando diretorio $_dir";
 	mkdir($_dir, 0755);
 	return $_dir;
@@ -228,7 +226,7 @@ sub dou_pages {
 # Download of DOU
 sub dou_download {
 	my ($_journal, $_page, $_date, $_dir) = @_;
-	my $_url = "http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=$_journal&pagina=$_page&data=$_date&captchafield=firistAcces";
+	my $_url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%s&captchafield=firistAccess", $_journal, $_page, $_date);
 	my $_file = sprintf("%04d_%02d_%02d_dou%04d_page%03d.pdf", (substr $_date, 6, 4), (substr $_date, 3, 2), (substr $_date, 0, 2), $_journal, $_page);
 	my $_path = $_dir . "/" . $_file;
 	getstore($_url, $_path);

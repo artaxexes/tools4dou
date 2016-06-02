@@ -61,31 +61,35 @@ DOU is an acronym in portuguese for Diario Oficial da Uniao, the official journa
 <br/>
 This small project is to help those who want to automate the download stage of pdf files from [Brazilian National Press](http://portal.imprensanacional.gov.br).
 <br/>
+<br/>
 To start simply make the file `scrpr4dou.pl` executable and run it with the commands...
-
+<br/>
 ```
 sudo chmod +x scrpr4dou.pl
 ./scrpr4dou.pl
 ```
-
+<br/>
 ...or simply run it using [perl](http://www.perl.org "The Perl Programming Language") :camel:, i.e.:
-
+<br/>
 ```perl scrpr4dou.pl```
-
+<br/>
+<br/>
 This [perl](http://www.perl.org "The Perl Programming Language") :camel: script uses [`Net::Ping`](http://perldoc.perl.org/Net/Ping.html "Net::Ping - check a remote host for reachability") :octocat: and [`LWP::Simple`](http://github.com/libwww-perl/libwww-perl "Simple procedural interface to LWP") :octocat: modules, make sure you have them installed before running, doing:
-
+<br/>
 ```cpan -l | grep ^Net::Ping[^:]```
-
+<br/>
 ```cpan -l | grep ^LWP::Simple[^:]```
-
+<br/>
 More info in the [official docs](http://perldoc.perl.org/perlfaq3.html#How-do-I-find-which-modules-are-installed-on-my-system%3f "Perl Programming Documentation - FAQs - How do I find which modules are installed on my system?")
-
+<br/>
+<br/>
 If you do not have them, install:
-
+<br/>
 ```cpan Net::Ping```
-
+<br/>
 ```cpan LWP::Simple```
-
+<br/>
 More info [in the CPAN website](http://www.cpan.org/modules/INSTALL.html "Comprehensive Perl Archive Network - How to install CPAN modules")
-
+<br/>
+<br/>
 Carefully read and type only what is required. Enjoy! :grin:

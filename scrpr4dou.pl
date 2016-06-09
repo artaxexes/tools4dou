@@ -7,12 +7,10 @@ use sigtrap qw(handler signal_handler normal-signals old-interface-signals);
 use Net::Ping;
 use LWP::Simple;
 
-
 BEGIN {
 	die "Antes de executar, instale o modulo Net::Ping com o comando:\ncpan Net::Ping\n" unless (eval{require Net::Ping});
 	die "Antes de executar, instale o modulo LWP::Simple com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
 }
-
 
 say "\n========================= Scraper DOU =========================";
 say "---------------------------------------------------------------";
@@ -94,6 +92,15 @@ my $date_init = "";
 my $date_final = "";
 my $date_all = 0;
 if ($opt_date eq "range") {
+	while ($date_range == 0) {
+		say "\nEspecifique o intervalo de data desejado informando:";
+		print "\tData inicial: ";
+		chomp($date_init = <STDIN>);
+		print "\tData final: ";
+		chomp($date_final = <STDIN>);
+		say "\t$date_init a $date_final";
+		$date_range = 1;
+	}
 }
 elsif ($opt_date eq "all") {
 }

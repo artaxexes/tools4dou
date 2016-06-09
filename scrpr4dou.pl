@@ -3,15 +3,18 @@
 use 5.22.1;
 use strict;
 use warnings;
+use sigtrap qw(handler signal_handler normal-signals old-interface-signals);
 use Net::Ping;
 use LWP::Simple;
+
 
 BEGIN {
 	die "Antes de executar, instale o modulo Net::Ping com o comando:\ncpan Net::Ping\n" unless (eval{require Net::Ping});
 	die "Antes de executar, instale o modulo LWP::Simple com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
 }
 
-say "========================= Scraper DOU =========================";
+
+say "\n========================= Scraper DOU =========================";
 say "---------------------------------------------------------------";
 
 # Check a Imprensa Nacional host for reachability
@@ -27,7 +30,8 @@ my ($curr_sec, $curr_min, $curr_hour, $curr_mday, $curr_mon, $curr_year, $curr_w
 $curr_mon += 1;
 $curr_year += 1900;
 my $curr_date = sprintf("%02d/%02d/%04d", $curr_mday, $curr_mon, $curr_year);
-say sprintf("Data/hora do sistema: %s %02dh%02dm%02ds", $curr_date, $curr_hour, $curr_min, $curr_sec);
+my $curr_now = sprintf("%s %02d:%02d:%02d", $curr_date, $curr_hour, $curr_min, $curr_sec);
+say "Data/hora do sistema: $curr_now"; 
 
 # Input options
 my $input_pattern = "(range|all|dou[1-3]), (range|all), (range|all|today|[0-9]{2}\/[0-9]{2}\/[0-9]{4})";
@@ -74,7 +78,7 @@ if ($opt_page eq "range") {
 		chomp($page_init = <STDIN>);
 		print "\tPagina final: ";
 		chomp($page_final = <STDIN>);
-		if ($page_init > $page_final && $page_init > 0 && $page_final > 0) {
+		if ($page_init > 0 && $page_final > $page_init) {
 			$page_range = 1;
 			say "\tIntervalo de paginas valido\n";
 		}
@@ -231,4 +235,13 @@ sub dou_download {
 	my $_path = $_dir . "/" . $_file;
 	getstore($_url, $_path);
 	say "Salvando arquivo PDF $_path";
+}
+
+# Log keeper
+sub signal_handler {
+	if (open my $out, '>>', 'scrpr4dou.log') {
+		my $msg = "Executado em $curr_now: $!\n";
+		print $out $msg;
+		die "\n$msg";
+	}
 }

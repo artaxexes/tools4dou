@@ -12,15 +12,15 @@ BEGIN {
 	die "Antes de executar, instale o modulo LWP::Simple com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
 }
 
-say "\n========================= Scraper DOU =========================";
-say "---------------------------------------------------------------";
+say "\n============================== scrpr4dou ==============================";
+say "-----------------------------------------------------------------------\n";
 
 # Check a Imprensa Nacional host for reachability
 my $host = "portal.imprensanacional.gov.br";
+say "Verificando conexao com http://$host...";
 my $p = Net::Ping->new();
-say "Verificando conexao com http://$host";
-die "http://$host esta offline\n" unless $p->ping($host);
-say "http://$host esta online";
+die "Nao foi possivel se conectar\n" unless $p->ping($host);
+say "Conexao estabelecida\n";
 $p->close();
 
 # System datetime
@@ -38,21 +38,22 @@ my $opt_page = "";
 my $opt_date = "";
 my $val_string = 0;
 while ($val_string == 0) {
-	say "\nDownload do Diario Oficial da Uniao baseado em tres variaveis: jornal, pagina, data";
-	say "Opcoes aceitas para cada variavel:";
-	say "* jornal = range ou all ou dou1 ou dou2 ou dou3";
-	say "\t- range indica um intervalo de jornais";
-	say "\t- all indica todos os jornais";
-	say "\t- dou1 ou dou2 ou dou3 indica o jornal correspondente";
-	say "* pagina = range ou all";
+	say "\nWeb scraping do Diario Oficial da Uniao";
+	say "\nEste script utiliza tres variaveis: jornal/secao, pagina, data";
+	say "Opcoes aceitas para cada variavel";
+	say "* jornal/secao: range ou all ou dou1 ou dou2 ou dou3";
+	say "\t- range indica um intervalo de jornais/secoes";
+	say "\t- all indica todos os jornais/secoes";
+	say "\t- dou1 ou dou2 ou dou3 indica o jornal/secao correspondente";
+	say "* pagina: range ou all";
 	say "\t- range indica um intervalo de paginas";
 	say "\t- all indica todas as paginas";
-	say "* data = range ou all ou today ou dd/mm/aaaa";
+	say "* data: range ou all ou today ou dd/mm/aaaa";
 	say "\t- range indica um intervalo de datas";
 	say "\t- all indica todas as datas";
 	say "\t- today indica a data atual";
 	say "\t- dd/mm/aaaa indica uma data valida no formato especificado";
-	print "Digite sua string para download do DOU: ";
+	print "Digite sua string: ";
 	chomp(my $input = <STDIN>);
 	if ($input =~ m/^$input_pattern$/) {
 		$opt_journal =  $1;
@@ -61,7 +62,9 @@ while ($val_string == 0) {
 		$val_string = 1 if ($opt_date eq "range" || $opt_date eq "all" || $opt_date eq "today" || date_val(date_split($opt_date)));
 	}
 	else {
-		say "\nString fora do padrao, leia atentamente as instrucoes e tente novamente!\n";
+		say "\nString invalida pois se econtra fora do padrao informado";
+		say "Atencao: existe um espaco entre o valor da variavel e as virgulas da string";
+		say "Leia atentamente as instrucoes e tente novamente!";
 	}
 }
 
@@ -85,6 +88,8 @@ if ($opt_page eq "range") {
 		}
 	}
 }
+
+die "Testing...\n";
 
 # Date options
 my $date_range = 0;

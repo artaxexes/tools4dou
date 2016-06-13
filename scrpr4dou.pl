@@ -15,9 +15,10 @@ BEGIN {
 say "\n============================== scrpr4dou ==============================";
 say "-----------------------------------------------------------------------\n";
 
-# Check a Imprensa Nacional host for reachability
-my $host = "portal.imprensanacional.gov.br";
-say "Verificando conexao com http://$host...";
+# Check reachability
+my $host = "pesquisa.in.gov.br";
+my $url_base = "http://".$host."/imprensa";
+say "Verificando conexao com $host";
 my $p = Net::Ping->new();
 die "Nao foi possivel se conectar\n" unless $p->ping($host);
 say "Conexao estabelecida\n";
@@ -88,8 +89,6 @@ if ($opt_page eq "range") {
 		}
 	}
 }
-
-die "Testing...\n";
 
 # Date options
 my $date_range = 0;
@@ -229,10 +228,16 @@ sub dir_create {
 	return $_dir;
 }
 
+# Check pdf or html
+sub dou_check {
+	my ($jornal, $page, $date) = @_;
+	my $url = $url_base."/servel
+}
+
 # Check the number of pages on DOU in specific date
 sub dou_pages {
-	my ($_journal, $_date) = @_;
-	my $url = get("http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?jornal=$_journal&pagina=1&data=$_date&captchafield=firistAccess");
+	my ($journal, $date) = @_;
+	my $url = get($url_base."/jsp/visualiza/index.jsp?jornal=$journal&pagina=1&data=$date&captchafield=firistAccess");
 	if ($url =~ /(&totalArquivos=)([0-9]+)"/) {
 		return $2;
 	}
@@ -241,12 +246,12 @@ sub dou_pages {
 
 # Download of DOU
 sub dou_download {
-	my ($_journal, $_page, $_date, $_dir) = @_;
-	my $_url = sprintf("http://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%s&captchafield=firistAccess", $_journal, $_page, $_date);
-	my $_file = sprintf("%04d_%02d_%02d_dou%04d_page%03d.pdf", (substr $_date, 6, 4), (substr $_date, 3, 2), (substr $_date, 0, 2), $_journal, $_page);
-	my $_path = $_dir . "/" . $_file;
-	getstore($_url, $_path);
-	say "Salvando arquivo PDF $_path";
+	my ($journal, $page, $date, $dir) = @_;
+	my $url = sprintf("%s/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%s&captchafield=firistAccess", $journal, $page, $date);
+	my $file = sprintf("%04d_%02d_%02d_dou%04d_page%03d.pdf", (substr $date, 6, 4), (substr $date, 3, 2), (substr $date, 0, 2), $journal, $page);
+	my $path = $dir."/".$file;
+	getstore($url, $path);
+	say "Salvando arquivo PDF $path";
 }
 
 # Log keeper

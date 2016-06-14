@@ -28,7 +28,11 @@ my ($now, $today, $year) = get_curr_datetime();
 # get user input for dou download
 my ($section, $page, $date) = get_user_input();
 
-my ($page_begin, $page_final, $date_begin, $date_final);
+my ($section_begin, $section_final, $page_begin, $page_final, $date_begin, $date_final);
+# specify section range
+if ($section eq "range") {
+	($section_begin, $section_final) = get_section_range();
+}
 # specify page range
 if ($page eq "range") {
 	($page_begin, $page_final) = get_page_range();
@@ -156,13 +160,33 @@ sub get_user_input {
         }
 }
 
+# get_section_range: get the section range from user
+# args: none
+# returns: init and final pages
+sub get_section_range {
+	my $chck = 0;
+	while (chck == 0) {
+		say "\n\tEspecifique o intervalo de secoes desejado informando:";
+		print "\tSecao inicial: ";
+		chomp(my $sctn_bgn = <STDIN>);
+		print "\tSecao final: ";
+		chomp(my $sctn_fnl = <STDIN>);
+		if (check_section_range()) {
+			$chck = 1;
+			say "\tIntervalo de secoes valido\n";
+			return ($sctn_bgn, $sctn_fnl);
+		}
+		say "\tIntervalo de secoes invalido, tente novamente";
+	}
+}
+
 # get_page_range: get the page range from user
 # args: none
 # returns: init and final pages
 sub get_page_range {
 	my $chck = 0;
 	while ($chck == 0) {
-		say "\n\tEspecifique o intervalo de pagina desejado informando:";
+		say "\n\tEspecifique o intervalo de paginas desejado informando:";
 		print "\tPagina inicial: ";
 		chomp(my $pg_bgn = <STDIN>);
 		print "\tPagina final: ";
@@ -182,7 +206,7 @@ sub get_page_range {
 sub get_date_range {
 	my $chck = 0;
 	while ($chck == 0) {
-		say "\n\tEspecifique o intervalo de data desejado informando:";
+		say "\n\tEspecifique o intervalo de datas desejado informando:";
 		print "\tData inicial no padrao dd/mm/aaaa: ";
 		chomp(my $dt_bgn = <STDIN>);
 		print "\tData final no padrao dd/mm/aaaa: ";

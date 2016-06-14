@@ -48,7 +48,10 @@ say "\nJust do it!\n";
 # dou download call
 for ($date) {
 	when ("range") {
-		if ((defined $date_begin) && (defined $date_final) && check_date_range($date_begin, $date_final)) {
+		die "Intervalo invalido" unless ((defined $date_begin) && (defined $date_final) && check_date_range($date_begin, $date_final)) {
+			my ($dy_bgn, $mnth_bgn, $yr_bgn) = detached_date_str($date_begin);
+			my ($dy_fnl, $mnth_fnl, $yr_fnl) = detached_date_str($date_final);
+		}
 	}
 	when ("all") {
 		die "Funcao ainda nao implementada\n";

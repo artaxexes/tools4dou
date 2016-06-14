@@ -48,7 +48,7 @@ say "\nJust do it!\n";
 # dou download call
 for ($date) {
 	when ("range") {
-		die "Funcao ainda nao implementada\n";
+		if ((defined $date_begin) && (defined $date_final) && check_date_range($date_begin, $date_final)) {
 	}
 	when ("all") {
 		die "Funcao ainda nao implementada\n";
@@ -166,7 +166,7 @@ sub get_user_input {
 # returns: init and final pages
 sub get_section_range {
 	my $chck = 0;
-	while (chck == 0) {
+	while ($chck == 0) {
 		say "\n\tEspecifique o intervalo de secoes desejado informando:";
 		print "\tSecao inicial: ";
 		chomp(my $sctn_bgn = <STDIN>);
@@ -235,8 +235,8 @@ sub check_dou_reach {
 }
 
 # check_dou_filetype: check DOU filetype
-# args: secition, page and date
-# returns: filetype
+# args: url
+# returns: 1 or 0
 sub check_dou_filetype {
 	my $url = shift(@_);
 	my @fl = head($url);
@@ -278,6 +278,23 @@ sub check_date {
                 }
         }
         return 0;
+}
+
+# check_date_range: check date range
+# args: begin and final dates
+# returns: 1 or 0
+sub check_date_range {
+	my ($dt_bgn, $dt_fnl) = @_;
+	my ($dy_bgn, $mnth_bgn, $yr_bgn) = detach_date_str($dt_bgn);
+	my ($dy_fnl, $mnth_fnl, $yr_fnl) = detach_date_str($dt_fnl);
+	if ($yr_fnl >= $yr_bgn) {
+                if ($mnth_fnl >= $mnth_bgn) {
+                        if ($dy_fnl > $dy_bgn) {
+                                return 1;
+                        }
+                }
+        }
+	return 0;
 }
 
 # ################### other subs ###################

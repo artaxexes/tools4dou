@@ -29,6 +29,7 @@ my ($now, $today, $year) = get_curr_datetime();
 my ($section, $page, $date) = get_user_input();
 
 my ($section_begin, $section_final, $page_begin, $page_final, $date_begin, $date_final);
+
 # specify section range
 if ($section eq "range") {
 	($section_begin, $section_final) = get_section_range();
@@ -237,8 +238,10 @@ sub check_dou_reach {
 # args: secition, page and date
 # returns: filetype
 sub check_dou_filetype {
-	#my ($jornal, $page, $date) = @_;
-	#my $url = $url_base."/servel
+	my $url = shift(@_);
+	my @fl = head($url);
+	return 0 unless ($fl[0] eq "application/pdf");
+	return 1;
 }
 
 # check_dou_pages: check the number of pages on DOU in specific section/date
@@ -305,8 +308,7 @@ sub dou_download {
 	my $dwnld = sprintf("%s/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%s&captchafield=firistAccess", $url, $sctn, $pg, $dt);
 	my $fl = sprintf("%04d_%02d_%02d_dou%04d_page%03d.pdf", (substr $dt, 6, 4), (substr $dt, 3, 2), (substr $dt, 0, 2), $sctn, $pg);
 	my $pth = $drctry."/".$fl;
-	getstore($dwnld, $pth);
-	say "Salvando arquivo PDF $pth";
+	check_dou_filetype($dwnld) ? getstore($dwnld, $pth) && say "Salvando arquivo PDF $pth" : say "Arquivo $pth nao sera salvo pois nao se trata de um PDF";
 }
 
 # signal_handler: log keeper

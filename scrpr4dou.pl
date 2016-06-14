@@ -17,53 +17,30 @@ print "\n============================== scrpr4dou ==============================
 print "\n-----------------------------------------------------------------------";
 print "\n\n                Web scraping do Diario Oficial da Uniao\n\n";
 
-my $host = "pesquisa.in.gov.br";
-check_reach($host);
+# specify and check dou host/url
+my $dou_host = "pesquisa.in.gov.br";
+check_dou_reach($dou_host);
+my $dou_url = "http://".$dou_host."/imprensa";
 
-my $url_base = "http://".$host."/imprensa";
+# get date and time
+my ($now, $today, $year) = get_curr_datetime();
 
-my ($now, $today, $year) = get_datetime();
-
-my ($journal, $page, $date) = get_user_input();
+# get user input for dou download
+my ($section, $page, $date) = get_user_input();
 
 my ($page_begin, $page_final, $date_begin, $date_final);
-
-# Page range
+# specify page range
 if ($page eq "range") {
 	($page_begin, $page_final) = get_page_range();
 }
-# Date range
+# specify date range
 if ($date eq "range") {
 	($date_begin, $date_final) = get_date_range();
 }
 
-die "Bye\n";
-
-=pod
-
-sub get_date_range {
-	my $chck = 0;
-	while ($chck == 0) {
-		say "\nEspecifique o intervalo de data desejado informando:";
-		print "\tData inicial no padrao dd/mm/aaaa: ";
-		chomp(my $dt_bgn = <STDIN>);
-		print "\tData final no padrao dd/mm/aaaa: ";
-		chomp(my $dt_fnl = <STDIN>);
-		if (date_val(date_split()) && date_val(date_split())) {
-			$chck = 1;
-			return ($dt_bgn, $dt_fnl);
-		}
-		else {
-			
-		}
-	}
-}
-elsif ($date eq "all") {
-}
-
 say "\nJust do it!\n";
 
-# Download DOU
+# dou download call
 for ($date) {
 	when ("range") {
 		die "Funcao ainda nao implementada\n";
@@ -71,99 +48,82 @@ for ($date) {
 	when ("all") {
 		die "Funcao ainda nao implementada\n";
 	}
-	when ("today") {
-		my $_dir = dir_create();
-		if ($journal eq "all" && $page eq "all") {
-			say "Baixando todas as paginas de todos os jornais de hoje";
-			for (my $_journal = 1; $_journal <= 3; $_journal++){
-				for (my $_page = 1; $_page <= dou_pages($_journal, $today); $_page++) {
-					dou_download($_journal, $_page, $today, $_dir);
-				}
-			}
-		}
-		elsif ($journal eq "dou1" && $page eq "all") {
-			say "Baixando todas as paginas do jornal $journal de hoje";
-			for (my $_page = 1; $_page <= dou_pages(1, $today); $_page++) {
-				dou_download(1, $_page, $today, $_dir);
-			}
-		}
-		elsif ($journal eq "dou2" && $page eq "all") {
-			say "Baixando todas as paginas do jornal $opt_journal de hoje";
-			for (my $_page = 1; $_page <= dou_pages(2, $today); $_page++) {
-				dou_download(2, $_page, $today, $_dir);
-			}
-		}
-		elsif ($journal eq "dou3" && $page eq "all") {
-			say "Baixando todas as paginas do jornal $journal de hoje";
-			for (my $_page = 1; $_page <= dou_pages(3, $today); $_page++) {
-				dou_download(3, $_page, $today, $_dir);
-			}
-		}
-		say "Finalizado";
-	}
 	default {
-		my $_dir = dir_create();
-		if ($journal eq "all" && $page eq "all") {
-			say "Baixando todas as paginas de todos os jornais de $date";
-			for (my $_journal = 1; $_journal <= 3; $_journal++){
-				for (my $_page = 1; $_page <= dou_pages($_journal, $date); $_page++) {
-					dou_download($_journal, $_page, $date, $_dir);
+		my $dir = create_dir($now);
+		$date = $today if ($date eq "today");
+		if ($section eq "all") {
+			if ($page eq "all") {
+				say "Baixando todas as paginas de todas as secoes de $date";
+				for (my $i = 1; $i <= 3; $i++){
+					my $page_i = check_dou_pages($i, $date, $dou_url); 
+					say "Baixando $page_i paginas da secao $i de $date";
+					for (my $j = 1; $j <= $page_i; $j++) {
+						dou_download($dou_url, $i, $j, $date, $dir);
+					}
+				}
+			}
+			elsif ((defined $page_begin) && (defined $page_final)) {
+				say "Baixando da pagina $page_begin a $page_final de todas as secoes de $date";
+				for (my $i = 1; $i <= 3; $i++){
+					my $page_i = check_dou_pages($i, $date, $dou_url);
+					if ($page_begin < $page_i) {
+						$page_final = $page_i if ($page_final > $page_i);
+						say "Baixando ".(($page_final - $page_begin) + 1)." paginas da secao $i de $date";
+						for (my $j = $page_begin; $j <= $page_final; $j++) {
+							dou_download($dou_url, $i, $j, $date, $dir);
+						}
+					}
+					else {
+						say "Esta secao possui apenas $page_i paginas";
+					}
 				}
 			}
 		}
-		elsif ($journal eq "dou1" && $page eq "all") {
-			say "Baixando todas as paginas do jornal $journal de $date";
-			for (my $_page = 1; $_page <= dou_pages(1, $date); $_page++) {
-				dou_download(1, $_page, $date, $_dir);
+		elsif (($section eq "dou1") || ($section eq "dou2") || ($section eq "dou3")) {
+			my $i = (substr $section, -1);
+			if ($page eq "all") { 
+				my $page_i = check_dou_pages($i, $date, $dou_url);
+				say "Baixando todas as $page_i paginas da secao $i de $date";
+				for (my $j = 1; $j <= $page_i; $j++) {
+					dou_download($dou_url, $i, $j, $date, $dir);
+				}
+			}
+			elsif ((defined $page_begin) && (defined $page_final)) {
+				say "Baixando da pagina $page_begin a $page_final da secao $i de $date";
+				my $page_i = check_dou_pages($i, $date, $dou_url);
+				if ($page_begin < $page_i) {
+					$page_final = $page_i if ($page_final > $page_i);
+					say "Baixando ".(($page_final - $page_begin) + 1)." paginas da secao $i de $date";
+					for (my $j = $page_begin; $j <= $page_final; $j++) {
+						dou_download($dou_url, $i, $j, $date, $dir);
+					}
+				}
+				else {
+					say "Esta secao possui apenas $page_i paginas";
+				}
 			}
 		}
-		elsif ($journal eq "dou2" && $page eq "all") {
-			say "Baixando todas as paginas do jornal $journal de $date";
-			for (my $_page = 1; $_page <= dou_pages(2, $date); $_page++) {
-				dou_download(2, $_page, $date, $_dir);
-			}
-		}
-		elsif ($journal eq "dou3" && $page eq "all") {
-			say "Baixando todas as paginas do jornal $journal de $date";
-			for (my $_page = 1; $_page <= dou_pages(3, $date); $_page++) {
-				dou_download(3, $_page, $date, $_dir);
-			}
-		}
-		say "Finalizado";
 	}
 }
+say "Finalizado";
 
-=cut
+# #################### get subs ####################
 
-# ##############################################
-# #################### subs ####################
-# ##############################################
-
-# check_reach: check reachability
-# args: host for reachability test
-# returns: none
-sub check_reach {
-	say "Verificando conexao com $host";
-	my $png = Net::Ping->new();
-	die "Nao foi possivel se conectar\n" unless $png->ping(shift(@_));
-        say "Conexao estabelecida\n";
-        $png->close();
-}
-
-# get_datetime: get local date and time
+# get_curr_datetime: get current date and time
 # args: none
-# returns: current date and time
-sub get_datetime {
+# returns: now, today and current year
+sub get_curr_datetime {
         my @tm = localtime(time);
 	my $tdy = sprintf("%02d/%02d/%04d", $tm[3], $tm[4] + 1, $tm[5] + 1900);
-        my $nw = sprintf("%02d_%02d_%04d_%02d_%02d_%02d", $tm[3], $tm[4] + 1, $tm[5] + 1900, $tm[2], $tm[1], $tm[0]);
+        my $nw = sprintf("%04d_%02d_%02d_%02dh%02dm%02ds", $tm[5] + 1900, $tm[4] + 1, $tm[3], $tm[2], $tm[1], $tm[0]);
+	#my $nw = sprintf("%02d_%02d_%04d_%02d_%02d_%02d", $tm[3], $tm[4] + 1, $tm[5] + 1900, $tm[2], $tm[1], $tm[0]);
         say sprintf("Data/hora do sistema: %s %02d:%02d:%02d\n", $tdy, $tm[2], $tm[1], $tm[0]);
         return ($nw, $tdy, $tm[5] + 1900);
 }
 
-# user_options: menu
+# get_user_input: menu for user
 # args: none
-# returns: section, page and date for download 
+# returns: section, page and date 
 sub get_user_input {
         my $pttrn = "(range|all|dou[1-3]), (range|all), (range|all|today|[0-9]{2}\/[0-9]{2}\/[0-9]{4})";
         my $chck = 0;
@@ -185,7 +145,7 @@ sub get_user_input {
                 print "Digite sua string conforme sua necessidade: ";
                 chomp(my $str = <STDIN>);
                 if ($str =~ m/^$pttrn$/) {
-                        if ($3 eq "range" || $3 eq "all" || $3 eq "today" || date_val(date_split($3))) {
+                        if (($3 eq "range") || ($3 eq "all") || ($3 eq "today") || (check_date(detach_date_str($3)))) {
 				$chck = 1;
 				return ($1, $2, $3);
 			}
@@ -196,7 +156,7 @@ sub get_user_input {
         }
 }
 
-# get_page_range: get from user the page range
+# get_page_range: get the page range from user
 # args: none
 # returns: init and final pages
 sub get_page_range {
@@ -207,105 +167,61 @@ sub get_page_range {
 		chomp(my $pg_bgn = <STDIN>);
 		print "\tPagina final: ";
 		chomp(my $pg_fnl = <STDIN>);
-		if ($pg_bgn > 0 && $pg_fnl > $pg_bgn) {
+		if (($pg_bgn > 0) && ($pg_fnl > $pg_bgn)) {
 			$chck = 1;
 			say "\tIntervalo de paginas valido\n";
 			return ($pg_bgn, $pg_fnl);
 		}
-		else {
-			say "\tIntervalo de paginas invalido, tente novamente";
-		}
+		say "\tIntervalo de paginas invalido, tente novamente";
 	}
 }
 
-# get_date_range: get from user the date range
+# get_date_range: get the date range from user
 # args: none
 # returns: init and final dates
-
-# date_split: split for date entered by user
-# args: formatted (dd/mm/yyyy) string representing a valid date
-# returns: day, month, year
-sub date_split {
-	my $str_dt = shift(@_);
-        return ((substr $str_dt, 0, 2), (substr $str_dt, 3, 2), (substr $str_dt, 6, 4));
-}
-
-# date_val: validation of date
-# args: day, month, year
-# returns: 1 or 0
-sub date_val {
-	my ($dy, $mnth, $yr) = @_;
-        if ($yr >= 1990 && $yr <= $year) {
-                if ($mnth == 1 || $mnth == 3 || $mnth == 5 || $mnth == 7 || $mnth == 8 || $mnth == 10 || $mnth == 12) {
-                        return 1 if ($dy >= 1 && $dy <= 31);
-                }
-                elsif ($mnth == 4 || $mnth == 6 || $mnth == 9 || $mnth == 11) {
-                        return 1 if ($dy >= 1 && $dy <= 30);
-                }
-                else {
-                        if (($yr % 4 == 0 && $yr % 100  != 0) || $yr % 400 == 0) {
-                                return 1 if ($dy >= 1 && $dy <= 29);
-                        }
-                        else {
-                                return 1 if ($dy >= 1 && $dy <= 28);
-                        }
-                }
-        }
-        return 0;
-}
-
-# date_range: validation of date range
-# args:
-# returns: 
-sub date_range {
-	say "\n\tEspecifique o intervalo de data desejado informando:";
-	print "\tData inicial no modelo dd/mm/aaaa: ";
-	chomp(my $date_init = <STDIN>);
-	print "\tData final tambem no modelo dd/mm/aaaa: ";
-	chomp(my $date_final = <STDIN>);
-	return ($date_init, $date_final) unless !(date_val(date_split($date_init)) && date_val(date_split($date_final)));
-	die "Intervalo de data invalido\n";
-}
-
-
-#getsub get_date_range {
+sub get_date_range {
 	my $chck = 0;
 	while ($chck == 0) {
-		say "\nEspecifique o intervalo de data desejado informando:";
+		say "\n\tEspecifique o intervalo de data desejado informando:";
 		print "\tData inicial no padrao dd/mm/aaaa: ";
 		chomp(my $dt_bgn = <STDIN>);
 		print "\tData final no padrao dd/mm/aaaa: ";
 		chomp(my $dt_fnl = <STDIN>);
-		if (date_val(date_split()) && date_val(date_split())) {
+		if (check_date(detach_date_str($dt_bgn)) && check_date(detach_date_str($dt_fnl))) {
 			$chck = 1;
 			return ($dt_bgn, $dt_fnl);
 		}
-		else {
-			
-		}
+		say "\tIntervalo de datas invalido, tente novamente";
 	}
 }
 
-=pod
-# dir_create: directory creation
-# args: now 
-# returns: directory name 
-sub dir_create {
-	my $dr = sprintf("scrpr4dou_%s", shift(@_));
-	say "Criando diretorio $dr";
-	die "Nao foi possivel criar diretorio de output, execute o script com privilegios\n" unless mkdir($dr, 0755);
-	return $dr;
+# ################### check subs ###################
+
+# check_dou_reach: check reachability of DOU website
+# args: host for reachability test
+# returns: none
+sub check_dou_reach {
+	my $url = shift(@_);
+	say "Verificando conexao com $url";
+	my $png = Net::Ping->new();
+	die "Nao foi possivel se conectar\n" unless $png->ping($url);
+        say "Conexao estabelecida\n";
+        $png->close();
 }
 
-# Check pdf or html
-sub dou_check {
-	my ($jornal, $page, $date) = @_;
-	my $url = $url_base."/servel
+# check_dou_filetype: check DOU filetype
+# args: secition, page and date
+# returns: filetype
+sub check_dou_filetype {
+	#my ($jornal, $page, $date) = @_;
+	#my $url = $url_base."/servel
 }
 
-# Check the number of pages on DOU in specific date
-sub dou_pages {
-	my ($jrnl, $dt) = @_;
+# check_dou_pages: check the number of pages on DOU in specific section/date
+# args: section, date
+# returns: number os pages
+sub check_dou_pages {
+	my ($sctn, $dt, $url) = @_;
 	my $dwnld = get($url."/jsp/visualiza/index.jsp?jornal=$sctn&pagina=1&data=$dt&captchafield=firistAccess");
 	if ($dwnld =~ /(&totalArquivos=)([0-9]+)"/) {
 		return $2;
@@ -313,19 +229,65 @@ sub dou_pages {
 	return 0;
 }
 
-# Download of DOU
+# check_date: date validation
+# args: day, month, year
+# returns: 1 or 0
+sub check_date {
+	my ($dy, $mnth, $yr) = @_;
+        if (($yr >= 1990) && ($yr <= $year)) {
+                if (($mnth == 1) || ($mnth == 3) || ($mnth == 5) || ($mnth == 7) || ($mnth == 8) || ($mnth == 10) || ($mnth == 12)) {
+                        return 1 if (($dy >= 1) && ($dy <= 31));
+                }
+                elsif (($mnth == 4) || ($mnth == 6) || ($mnth == 9) || ($mnth == 11)) {
+                        return 1 if (($dy >= 1) && ($dy <= 30));
+                }
+                else {
+                        if ((($yr % 4 == 0) && ($yr % 100 != 0)) || ($yr % 400 == 0)) {
+                                return 1 if (($dy >= 1) && ($dy <= 29));
+                        }
+                        else {
+                                return 1 if (($dy >= 1) && ($dy <= 28));
+                        }
+                }
+        }
+        return 0;
+}
+
+# ################### other subs ###################
+
+# detach_date_str: detach date string
+# args: a valid date in formatted string (dd/mm/yyyy)
+# returns: day, month, year
+sub detach_date_str {
+	my $dt_str = shift(@_);
+        return ((substr $dt_str, 0, 2), (substr $dt_str, 3, 2), (substr $dt_str, 6, 4));
+}
+
+# create_dir: create directory
+# args: current date and time
+# returns: directory name 
+sub create_dir {
+	my $dr = sprintf("scrpr4dou_%s", shift(@_));
+	say "Criando diretorio $dr";
+	die "Nao foi possivel criar diretorio de output, execute o script com privilegios\n" unless mkdir($dr, 0755);
+	return $dr;
+}
+
+# dou_download: pdf download
+# args: section, page, date and directory
+# returns: none
 sub dou_download {
-	my ($sctn, $pg, $dt, $drctry) = @_;
-	my $dwnld = sprintf("%s/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%s&captchafield=firistAccess", $sctn, $pg, $dt);
+	my ($url, $sctn, $pg, $dt, $drctry) = @_;
+	my $dwnld = sprintf("%s/servlet/INPDFViewer?jornal=%d&pagina=%d&data=%s&captchafield=firistAccess", $url, $sctn, $pg, $dt);
 	my $fl = sprintf("%04d_%02d_%02d_dou%04d_page%03d.pdf", (substr $dt, 6, 4), (substr $dt, 3, 2), (substr $dt, 0, 2), $sctn, $pg);
 	my $pth = $drctry."/".$fl;
 	getstore($dwnld, $pth);
 	say "Salvando arquivo PDF $pth";
 }
 
-=cut
-
-# Log keeper
+# signal_handler: log keeper
+# args: signal
+# returns: none
 sub signal_handler {
 	if (open my $out, '>>', 'scrpr4dou.log') {
 		my $msg = "$now: $!\n";

@@ -1,17 +1,19 @@
 #!/usr/bin/perl
 # scrpr4dou.pl
 
+BEGIN {
+	die "Antes de executar, instale o modulo DateTime\n" unless(eval{require DateTime});
+	die "Antes de executar, instale o modulo Net::Ping\n" unless (eval{require Net::Ping});
+	die "Antes de executar, instale o modulo LWP::Simple\n" unless (eval{require LWP::Simple});
+}
+
 use 5.22.1;
 use strict;
 use warnings;
 use sigtrap qw(handler signal_handler normal-signals old-interface-signals);
+use DateTime;
 use Net::Ping;
 use LWP::Simple;
-
-BEGIN {
-	die "Antes de executar, instale o modulo Net::Ping com o comando:\ncpan Net::Ping\n" unless (eval{require Net::Ping});
-	die "Antes de executar, instale o modulo LWP::Simple com o comando:\ncpan LWP::Simple\n" unless (eval{require LWP::Simple});
-}
 
 print "\n============================== scrpr4dou ==============================";
 print "\n-----------------------------------------------------------------------";
@@ -47,16 +49,73 @@ say "\nJust do it!\n";
 
 # dou download call
 for ($date) {
-	when ("range") {
-		die "Intervalo invalido" unless ((defined $date_begin) && (defined $date_final) && check_date_range($date_begin, $date_final)) {
-			my ($dy_bgn, $mnth_bgn, $yr_bgn) = detached_date_str($date_begin);
-			my ($dy_fnl, $mnth_fnl, $yr_fnl) = detached_date_str($date_final);
+	(/range/ || /all/) and do {
+		(($date_begin = '02/01/1990') && ($date_final = $today)) if ($date eq 'all');
+		die 'Intervalo invalido' unless ((defined $date_begin) && (defined $date_final) && (check_date_range($date_begin, $date_final)));
+		my $begin = DateTime->new(year => (substr $date_begin, 6, 4), month => (substr $date_begin, 3, 2), day => (substr $date_begin, 0, 2));
+		my $final = DateTime->new(year => (substr $date_final, 6, 4), month => (substr $date_final, 3, 2), day => (substr $date_final, 0, 2));
+		#my ($dy_bgn, $mnth_bgn, $yr_bgn) = detached_date_str($date_begin);
+		#my ($dy_fnl, $mnth_fnl, $yr_fnl) = detached_date_str($date_final);
+		my $dir = create_dir($now);
+		while($begin <= $final) {
+			my $_date = $begin->dmy('/');
+			if ($section eq "all") {
+				if ($page eq "all") {
+					say "Baixando todas as paginas de todas as secoes de $_date";
+					for (my $i = 1; $i <= 3; $i++){
+						my $page_i = check_dou_pages($i, $_date, $dou_url);
+						say "Baixando $page_i paginas da secao $i de $_date";
+						for (my $j = 1; $j <= $page_i; $j++) {
+							dou_download($dou_url, $i, $j, $_date, $dir);
+						}
+					}
+				}
+				elsif ((defined $page_begin) && (defined $page_final)) {
+					say "Baixando da pagina $page_begin a $page_final de todas as secoes de $_date";
+					for (my $i = 1; $i <= 3; $i++){
+						my $page_i = check_dou_pages($i, $_date, $dou_url);
+						if ($page_begin < $page_i) {
+							$page_final = $page_i if ($page_final > $page_i);
+							say "Baixando ".(($page_final - $page_begin) + 1)." paginas da secao $i de $_date";
+							for (my $j = $page_begin; $j <= $page_final; $j++) {
+								dou_download($dou_url, $i, $j, $_date, $dir);
+							}
+						}
+						else {
+							say "Esta secao possui $page_i paginas";
+						}
+					}
+				}
+			}
+			elsif (($section eq "dou1") || ($section eq "dou2") || ($section eq "dou3")) {
+				my $i = (substr $section, -1);
+				if ($page eq "all") {
+					my $page_i = check_dou_pages($i, $_date, $dou_url);
+					say "Baixando todas as $page_i paginas da secao $i de $_date";
+					for (my $j = 1; $j <= $page_i; $j++) {
+						dou_download($dou_url, $i, $j, $_date, $dir);
+					}
+				}
+				elsif ((defined $page_begin) && (defined $page_final)) {
+					say "Baixando da pagina $page_begin a $page_final da secao $i de $_date";
+					my $page_i = check_dou_pages($i, $_date, $dou_url);
+					if ($page_begin < $page_i) {
+						$page_final = $page_i if ($page_final > $page_i);
+						say "Baixando ".(($page_final - $page_begin) + 1)." paginas da secao $i de $_date";
+						for (my $j = $page_begin; $j <= $page_final; $j++) {
+							dou_download($dou_url, $i, $j, $_date, $dir);
+						}
+					}
+					else {
+						say "Esta secao possui $page_i paginas";
+					}
+				}
+			}
+			$begin->add(days => 1);
 		}
-	}
-	when ("all") {
-		die "Funcao ainda nao implementada\n";
-	}
-	default {
+		last;
+	};
+	(/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/ || /today/) and do {
 		my $dir = create_dir($now);
 		$date = $today if ($date eq "today");
 		if ($section eq "all") {
@@ -82,7 +141,7 @@ for ($date) {
 						}
 					}
 					else {
-						say "Esta secao possui apenas $page_i paginas";
+						say "Esta secao possui $page_i paginas";
 					}
 				}
 			}
@@ -107,11 +166,12 @@ for ($date) {
 					}
 				}
 				else {
-					say "Esta secao possui apenas $page_i paginas";
+					say "Esta secao possui $page_i paginas";
 				}
 			}
 		}
-	}
+		last;
+	};
 }
 say "Finalizado";
 

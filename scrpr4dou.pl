@@ -347,17 +347,28 @@ sub check_date {
 # args: begin and final dates
 # returns: 1 or 0
 sub check_date_range {
+
+=pod
+
 	my ($dt_bgn, $dt_fnl) = @_;
 	my ($dy_bgn, $mnth_bgn, $yr_bgn) = detach_date_str($dt_bgn);
 	my ($dy_fnl, $mnth_fnl, $yr_fnl) = detach_date_str($dt_fnl);
 	if ($yr_fnl >= $yr_bgn) {
                 if ($mnth_fnl >= $mnth_bgn) {
                         if ($dy_fnl > $dy_bgn) {
-                                return 1;
+
+=cut
+
+				return 1;
+
+=pod
                         }
                 }
         }
 	return 0;
+
+=cut
+
 }
 
 # ################### other subs ###################

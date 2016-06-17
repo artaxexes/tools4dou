@@ -1,10 +1,15 @@
 #!/usr/bin/perl
 # scrpr4dou.pl
 
+=pod
+	Author: Artaxexes J. Ferreira
+	E-mail: anddrei.ferreira@biggdata.com.br
+=cut
+
 BEGIN {
-	die "Antes de executar, instale o modulo DateTime\n" unless(eval{require DateTime});
-	die "Antes de executar, instale o modulo Net::Ping\n" unless (eval{require Net::Ping});
-	die "Antes de executar, instale o modulo LWP::Simple\n" unless (eval{require LWP::Simple});
+	die "Instale o modulo DateTime\n" unless(eval{require DateTime});
+	die "Instale o modulo Net::Ping\n" unless (eval{require Net::Ping});
+	die "Instale o modulo LWP::Simple\n" unless (eval{require LWP::Simple});
 }
 
 use 5.22.1;
@@ -277,6 +282,7 @@ sub get_date_range {
 		chomp(my $dt_fnl = <STDIN>);
 		if (check_date(detach_date_str($dt_bgn)) && check_date(detach_date_str($dt_fnl))) {
 			$chck = 1;
+			say "\tIntervalo de datas valido\n";
 			return ($dt_bgn, $dt_fnl);
 		}
 		say "\tIntervalo de datas invalido, tente novamente";
@@ -347,28 +353,13 @@ sub check_date {
 # args: begin and final dates
 # returns: 1 or 0
 sub check_date_range {
-
-=pod
-
-	my ($dt_bgn, $dt_fnl) = @_;
-	my ($dy_bgn, $mnth_bgn, $yr_bgn) = detach_date_str($dt_bgn);
-	my ($dy_fnl, $mnth_fnl, $yr_fnl) = detach_date_str($dt_fnl);
-	if ($yr_fnl >= $yr_bgn) {
-                if ($mnth_fnl >= $mnth_bgn) {
-                        if ($dy_fnl > $dy_bgn) {
-
-=cut
-
-				return 1;
-
-=pod
-                        }
-                }
-        }
-	return 0;
-
-=cut
-
+	#my ($dt_bgn, $dt_fnl) = @_;
+	my ($dy_bgn, $mnth_bgn, $yr_bgn) = detach_date_str($_[0]);
+	my ($dy_fnl, $mnth_fnl, $yr_fnl) = detach_date_str($_[1]);
+	my $dt_bgn = DateTime->new(year => $yr_bgn, month => $mnth_bgn, day => $dy_bgn);
+	my $dt_fnl = DateTime->new(year => $yr_fnl, month => $mnth_fnl, day => $dy_fnl);
+	return 0 unless $dt_fnl > $dt_bgn;
+	return 1;
 }
 
 # ################### other subs ###################

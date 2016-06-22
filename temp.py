@@ -3,6 +3,7 @@
 
 from sys import argv
 import re
+import os
 
 
 
@@ -34,10 +35,23 @@ for x in txt2:
 
 # replacement
 '''
-txt1 = "Eu    estou  aqui   na                    sua  casa."
+txt1 = "Eu estou  aqui   na    sua     casa."
 txt2 = re.sub(r' {2,}', " ", txt1)
 print txt1
 print txt2
+'''
+
+# files list
+'''
+try:
+	path = argv[1]
+	files = os.listdir(path)
+	files.sort()
+	for f in files:
+		if not os.path.isdir(path + f):
+			print f
+except OSError as e:
+	print "OSError({0}): {1}".format(e.errno, e.strerror)
 '''
 
 print "\nEOF"

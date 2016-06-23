@@ -4,17 +4,28 @@
 import sys
 import re
 import os
+# xlsx
+import openpyxl
+# pdf
+import pdfrw
+import PyPDF2
 
 
 
-# basic test
+# openpyxl test
 '''
-files = []
-tests = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-for n in tests:
-	if n % 2 == 0:
-		files.append(n)
-print files
+wb = openpyxl.Workbook()
+ws = wb.active
+ws['A1'] = "Nome"
+ws['B1'] = "Sexo"
+names = ["Paulo", "Terezinha", "Addan", "Addania", "Anddrei"]
+gender = ["M", "F", "M", "F", "M"]
+index = 2
+for name in names:
+	ws['A'+str(index)] = names[index - 2]
+	ws['B'+str(index)] = gender[index - 2]
+	index += 1
+wb.save('test.xlsx')
 '''
 
 # regexp test

@@ -4,6 +4,7 @@
 import sys
 import re
 import os
+import openpyxl
 
 
 
@@ -37,7 +38,13 @@ except OSError as e:
 
 # read file content and replace line breaks
 try:
-	print "pedido ou nao, nome, cargo, codigo"
+	wb = Workbook()
+	ws = wb.active
+	ws['A1'] = "Pedido ou nao"
+	ws['B1'] = "Nome"
+	ws['C1'] = "Cargo/Orgao"
+	ws['D1'] = "Codigo"
+	index = 2
 	for f in files:
 		fo = open(path + f, 'r')
 		txt = fo.read()
@@ -45,7 +52,6 @@ try:
 		txt = re.sub(r' {2,}', ' ', txt)
 		results = regexp.findall(txt)
 		for m in results:
-			line = []
 			for n in m:
 				n = n.decode('utf-8')
 				if (n == ", a pedido,"):
@@ -54,7 +60,8 @@ try:
 					line.append("nao pedido")
 				else:
 					line.append(n)
-			print line[0], line[1], line[2], line[3]
+			#ws[line[0], line[1], line[2], line[3]
+	wb.save('dou_search.xlsx')
 except IOError:
 	print "cannot find or read the data from file", f
 	if file_is_open(fo):

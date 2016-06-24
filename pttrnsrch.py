@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# pttrnsrch.py
 
 import sys
 import re
@@ -9,16 +10,16 @@ import openpyxl
 
 
 # args validation
-if ((len(sys.argv) != 3) or (sys.argv[1] not in ["EXONERAR", "NOMEAR"]) or (not os.path.isdir(sys.argv[2]))):
-	sys.exit("wrong args, try:\n./pttrnsrch.py [EXONERAR|NOMEAR] pathname")
+if ((len(sys.argv) != 3) or (sys.argv[1] not in ["-e", "-n"]) or (not os.path.isdir(sys.argv[2]))):
+	sys.exit("wrong args, try:\n./pttrnsrch.py -e|-n pathname")
 else:
 	action = sys.argv[1]
 	path = sys.argv[2]
 
 
 # define pattern
-if (action == "EXONERAR"):
-	pattern = r'EXONERAR(, a pedido,)? (.*?) do cargo (.*?), código (DAS \d\d\d\.\d)'
+if (action == "-e"):
+	pattern = r'EXONERAR(, a pedido,)? (.*?) do cargo (.*?), código (DAS ?-? ?\d\d\d\.\d)'
 else:
 	pattern = r'NOMEAR'
 regexp = re.compile(pattern)
@@ -38,7 +39,7 @@ except OSError as e:
 
 # read file content and replace line breaks
 try:
-	wb = Workbook()
+	wb = openpyxl.Workbook()
 	ws = wb.active
 	ws['A1'] = "Pedido ou nao"
 	ws['B1'] = "Nome"
@@ -52,6 +53,7 @@ try:
 		txt = re.sub(r' {2,}', ' ', txt)
 		results = regexp.findall(txt)
 		for m in results:
+			line = []
 			for n in m:
 				n = n.decode('utf-8')
 				if (n == ", a pedido,"):
@@ -60,8 +62,14 @@ try:
 					line.append("nao pedido")
 				else:
 					line.append(n)
-			#ws[line[0], line[1], line[2], line[3]
+			ws['A'+str(index)] = line[0]
+			ws['B'+str(index)] = line[1]
+			ws['C'+str(index)] = line[2]
+			ws['D'+str(index)] = line[3]
+			print line
+			index += 1
 	wb.save('dou_search.xlsx')
+	print index
 except IOError:
 	print "cannot find or read the data from file", f
 	if file_is_open(fo):

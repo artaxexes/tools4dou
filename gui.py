@@ -3,13 +3,14 @@
 
 from tkinter import * 
 from tkinter import ttk
+from tkinter import messagebox
 import datetime
 import scrpr4dou
 
 class Application:
 
   def __init__(self, parent):
-    self.parent = ttk.Frame(parent, padding='1 6 12 12')
+    self.parent = ttk.Frame(parent, padding='1 7 12 12')
     self.parent.grid(column=0, row=0, stick=(N, W, E, S))
     self.parent.columnconfigure(0, weight=1)
     self.parent.rowconfigure(0, weight=1)
@@ -20,6 +21,7 @@ class Application:
     self.entry3()
     self.btn1()
     self.btn2()
+    self.label()
     
   def combobox(self):
     self.combobox_value = StringVar()
@@ -57,6 +59,10 @@ class Application:
     self.btn2_btn = ttk.Button(self.parent, text='download', command=self.init_download)
     self.btn2_btn.grid(column=1, row=6, sticky=(W, E))
 
+  def label(self):
+    self.label_value = StringVar()
+    self.label_status = ttk.Label(self.parent, textvariable=self.label_value, anchor = 'center').grid(column=1, row=7, sticky=(W, E))
+
   def clear_fields(self):
     self.combobox_gui.current(0)
     self.entry1_value.set('')
@@ -64,8 +70,17 @@ class Application:
     self.entry3_value.set('')
 
   def init_download(self):
+     self.btn1_btn.state(['disabled'])
+     self.btn2_btn.state(['disabled'])
+     self.label_value.set('\nbaixando...')
+     messagebox.showinfo('scrpr4dou', 'download iniciado, aguarde...')
      col = scrpr4dou.Collection(self.combobox_value.get(), self.entry1_value.get(), self.entry2_value.get(), self.entry3_value.get())
-     col.to_local(datetime.datetime.now())
+     scraper = col.to_local(datetime.datetime.now())
+     if scraper:
+       self.btn1_btn.state(['!disabled'])
+       self.btn2_btn.state(['!disabled'])
+       self.label_value.set('')
+       messagebox.showinfo('scrpr4dou', 'download concluido, os arquivos estao na pasta raiz do programa')
 
 if __name__ == '__main__':
   root = Tk()

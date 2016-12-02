@@ -7,6 +7,7 @@ import datetime
 import urllib.request
 import pymongo
 import elasticsearch
+import PyPDF2
 
 class Collection:
 
@@ -21,7 +22,7 @@ class Collection:
     """ private members """
     self.__dou_url = 'http://pesquisa.in.gov.br/imprensa'
     self.__coding = 'ISO-8859-1'
-    self.__mask_type = ('dot', 'slash')
+    self.__mask_type = ('dot_folder', 'slash', 'dot_file')
 
 
   """ private methods"""
@@ -47,23 +48,36 @@ class Collection:
   def __date_to_str(self, date):
     return '{:02}/{:02}/{:04}'.format(date.day, date.month, date.year)
 
-  def __str_to_date(self, date):
-    return datetime.date(int(self.date_initial[6:10]), int(self.date_initial[3:5]), int(self.date_initial[0:2]))
+  def __str_to_date(self, str_date):
+    return datetime.date(int(str_date[6:10]), int(str_date[3:5]), int(str_date[0:2]))
 
-  def __date_range(self, begin_str, end_str):
-    begin = self.__str_to_date(begin_str)
-    end = self.__str_to_date(end_str)
+  def __date_range(self, begin, end):
+    begin_date = self.__str_to_date(begin)
+    end_date = self.__str_to_date(end)
     period = []
-    if begin < end:
-      for day in range((end - begin).days + 1):
-        date = begin + datetime.timedelta(day)
-        period.append((self.__date_time_mask(date, self.__mask_type[1]), date.weekday()))
-    return period 
+    if begin_date <= end_date:
+      for day in range((end_date - begin_date).days + 1):
+        date = begin_date + datetime.timedelta(day)
+        if date.weekday() <= 4:
+          period.append(self.__date_time_mask(date, self.__mask_type[1]))
+    return period
 
   def __date_time_mask(self, date_time, mask_type):
-    if mask_type == 'dot':
+    if mask_type == 'dot_folder':
       return date_time.strftime('%Y.%m.%d.%Hh%Mm%Ss')
+    elif mask_type == 'dot_file':
+      return date_time.strftime('%Y.%m.%d')
     return date_time.strftime('%d/%m/%Y')
+
+  def __mount_url(self, begin, end):
+    days = self.__date_range(begin, end)
+    urls = []
+    for d in days:
+        for j in range(1, 4):
+          pages = self.__page_number(str(j), d)
+          for p in range(1, (pages + 1)):
+            urls.append((d, str(j), str(p), self.__dou_url + '/servlet/INPDFViewer?jornal=' + str(j) + '&pagina=' + str(p) + '&data=' + d + '&captchafield=firistAccess'))
+    return urls
 
 
 
@@ -72,19 +86,8 @@ class Collection:
   def to_local(self, path):
     folder = self.__date_time_mask(path, self.__mask_type[0])
     os.mkdir(folder)
-    days = self.__date_range(self.date_initial, self.date_final)
-    for day in days:
-      #if date.weekday() <= 4:
-      print(day)
-      """
-        for journal in range(1, 4):
-          pages = self.__page_number(str(journal), day[0])
-          print(type(pages))
-          for page in range(1, (pages + 1)):
-            jn = str(journal)
-            pg = str(page)
-            url = self.__dou_url + '/servlet/INPDFViewer?jornal=' + jn + '&pagina=' + pg + '&data=' + day + '&captchafield=firistAccess'
-            filepath = folder + '/' + jn + '.' + pg + '.' + self.__date_time_mask(day, self.__masktype[0])
-            print('saving ' + filepath + ' into ' + folder)
-            #urllib.request.urlretrieve(url, filepath)
-      """
+    urls = self.__mount_url(self.date_initial, self.date_final)
+    for url in urls:
+      filepath = folder + '/' + self.__date_time_mask(self.__str_to_date(url[0]), self.__mask_type[2]) + 'cad' + url[1] + 'pg' + url[2] + '.pdf'
+      urllib.request.urlretrieve(url[3], filepath)
+    return True

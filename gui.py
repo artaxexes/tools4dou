@@ -1,51 +1,71 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from tkinter import *
+from tkinter import * 
 from tkinter import ttk
+import datetime
+import scrpr4dou
 
 class Application:
 
   def __init__(self, parent):
-    self.parent = ttk.Frame(parent, padding='1 4 12 12')
+    self.parent = ttk.Frame(parent, padding='1 6 12 12')
     self.parent.grid(column=0, row=0, stick=(N, W, E, S))
     self.parent.columnconfigure(0, weight=1)
     self.parent.rowconfigure(0, weight=1)
     for child in parent.winfo_children(): child.grid_configure(padx=5, pady=5)
-    self.combo()
-    self.entry()
+    self.combobox()
+    self.entry1()
+    self.entry2()
+    self.entry3()
     self.btn1()
     self.btn2()
     
-  def combo(self):
-    self.box_value = StringVar()
-    self.box = ttk.Combobox(self.parent, textvariable=self.box_value, state='readonly')
-    self.box['values'] = ('selecione o nosql...', 'mongodb', 'elasticsearch')
-    self.box.current(0)
-    self.box.grid(column=1, row=1, sticky=(W, E))
+  def combobox(self):
+    self.combobox_value = StringVar()
+    self.combobox_gui = ttk.Combobox(self.parent, textvariable=self.combobox_value, state='readonly')
+    self.combobox_gui['values'] = ('selecione o nosql...', 'mongodb', 'elasticsearch')
+    self.combobox_gui.current(0)
+    self.combobox_gui.grid(column=1, row=1, sticky=(W, E))
 
-  def entry(self):
-    self.entry_value = StringVar()
-    self.entry = ttk.Entry(self.parent, width=30, textvariable=self.entry_value)
-    self.entry.insert(0, 'digite uma url valida para o nosql')
-    self.entry.bind('<Enter>', lambda e: self.entry.delete(0, 'end')) 
-    self.entry.grid(column=1, row=2, sticky=(W, E))
+  def entry1(self):
+    self.entry1_value = StringVar()
+    self.entry1_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry1_value)
+    self.entry1_gui.insert(0, 'url para o nosql')
+    self.entry1_gui.bind('<Button-1>', lambda e: self.entry1_gui.delete(0, 'end')) 
+    self.entry1_gui.grid(column=1, row=2, sticky=(W, E))
+
+  def entry2(self):
+    self.entry2_value = StringVar()
+    self.entry2_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry2_value)
+    self.entry2_gui.insert(0, '01/12/2016')
+    self.entry2_gui.bind('<Button-1>', lambda e: self.entry2_gui.delete(0, 'end')) 
+    self.entry2_gui.grid(column=1, row=3, sticky=(W, E))
+
+  def entry3(self):
+    self.entry3_value = StringVar()
+    self.entry3_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry3_value)
+    self.entry3_gui.insert(0, '05/12/2016')
+    self.entry3_gui.bind('<Button-1>', lambda e: self.entry3_gui.delete(0, 'end')) 
+    self.entry3_gui.grid(column=1, row=4, sticky=(W, E))
 
   def btn1(self):
-    self.btn_clear = ttk.Button(self.parent, text='clear', command=self.clear)
-    self.btn_clear.grid(column=1, row=3, sticky=(W, E))
+    self.btn1_btn = ttk.Button(self.parent, text='limpar', command=self.clear_fields)
+    self.btn1_btn.grid(column=1, row=5, sticky=(W, E))
 
   def btn2(self):
-    self.btn_down = ttk.Button(self.parent, text='download', command=self.download)
-    self.btn_down.grid(column=1, row=4, sticky=(W, E))
+    self.btn2_btn = ttk.Button(self.parent, text='download', command=self.init_download)
+    self.btn2_btn.grid(column=1, row=6, sticky=(W, E))
 
-  def clear(self):
-    self.entry_value.set('')
-    self.box.current(0)
+  def clear_fields(self):
+    self.combobox_gui.current(0)
+    self.entry1_value.set('')
+    self.entry2_value.set('')
+    self.entry3_value.set('')
 
-  def download(self):
-    print(self.box_value.get())
-    print(self.entry_value.get())
+  def init_download(self):
+     col = scrpr4dou.Collection(self.combobox_value.get(), self.entry1_value.get(), self.entry2_value.get(), self.entry3_value.get())
+     col.to_local(datetime.datetime.now())
 
 if __name__ == '__main__':
   root = Tk()

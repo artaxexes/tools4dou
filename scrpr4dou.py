@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -84,10 +84,29 @@ class Collection:
   """ public methods """
 
   def to_local(self, path):
-    folder = self.__date_time_mask(path, self.__mask_type[0])
+    global folder
+    folder  = self.__date_time_mask(path, self.__mask_type[0])
     os.mkdir(folder)
     urls = self.__mount_url(self.date_initial, self.date_final)
     for url in urls:
       filepath = folder + '/' + self.__date_time_mask(self.__str_to_date(url[0]), self.__mask_type[2]) + 'cad' + url[1] + 'pg' + url[2] + '.pdf'
       urllib.request.urlretrieve(url[3], filepath)
     return True
+
+  def to_nosql(self):
+    files = os.listdir(folder)
+    if self.nosql_name == 'mongodb':
+      # mongodb
+      mongo_conf = (self.nosql_url, 27017, 'dou', folder)
+      client = pymongo.MongoClient(mongo_conf[0], mongo_conf[1])
+      db = client[mongo_conf[2]]
+      collection = db[mongo_conf[3]]
+      # files
+      for f in files:
+        pdf = PyPDF2.PdfFileReader(folder + '/' + f)
+        content = pdf.getPage(0).extractText()
+        result = collection.insert_one({'file':f, 'folder':folder, 'content':content})
+      client.close()
+      return True
+    elif self.nosql_name == 'elasticsearch':
+      return False

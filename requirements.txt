@@ -1,0 +1,10 @@
+# pip install -r requirements.txt
+
+os
+datetime
+tkinter
+re
+urllib.request
+pymongo
+elasticsearch
+PyPDF2

@@ -13,10 +13,11 @@ class Collection:
 
   """ set of dou pages """
 
-  def __init__(self, nosql_name, nosql_url, date_initial, date_final):
+  def __init__(self, nosql_name, nosql_url, nosql_port, date_initial, date_final):
     """ public members """
     self.nosql_name = nosql_name
     self.nosql_url = nosql_url
+    self.nosql_port = nosql_port
     self.date_initial = date_initial
     self.date_final = date_final
     """ private members """
@@ -95,9 +96,9 @@ class Collection:
 
   def to_nosql(self):
     files = os.listdir(folder)
-    if self.nosql_name == 'mongodb':
+    if self.nosql_name == 'MongoDB':
       # mongodb
-      mongo_conf = (self.nosql_url, 27017, 'dou', folder)
+      mongo_conf = (self.nosql_url, int(self.nosql_port), 'dou', folder)
       client = pymongo.MongoClient(mongo_conf[0], mongo_conf[1])
       db = client[mongo_conf[2]]
       collection = db[mongo_conf[3]]
@@ -108,5 +109,5 @@ class Collection:
         result = collection.insert_one({'file':f, 'folder':folder, 'content':content})
       client.close()
       return True
-    elif self.nosql_name == 'elasticsearch':
+    elif self.nosql_name == 'Elasticsearch':
       return False

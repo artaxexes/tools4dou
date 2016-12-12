@@ -143,7 +143,7 @@ class Application:
     if col.to_local(datetime.datetime.now()):
       self.btn2_gui.state(['!disabled'])
       messagebox.showinfo('scrpr4dou', 'Download concluído')
-      self.lbl7_value.set('Agora o conteúdo baixado pode ser inserido no NoSQL, caso tenha sido selecionado')
+      self.lbl7_value.set('')
 
   def __init_ingest(self):
     self.lbl7_value.set('Inserindo...')

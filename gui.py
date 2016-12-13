@@ -15,98 +15,96 @@ class Application:
     self.parent.grid(column=0, row=0, stick=(N, W, E, S))
     self.parent.columnconfigure(0, weight=1)
     self.parent.rowconfigure(0, weight=1)
+    self.__widgets()
     for child in parent.winfo_children(): child.grid_configure(padx=5, pady=5)
-    self.title()
-    self.subtitle()
-    self.lbl1()
-    self.entry1()
-    self.lbl2()
-    self.entry2()
-    self.lbl3()
-    self.combobox()
-    self.lbl4()
-    self.entry4()
-    self.lbl5()
-    self.entry5()
-    self.lbl6()
-    self.btn1()
-    self.btn2()
-    self.btn3()
-    self.lbl7()
 
-  def title(self):
-    self.lbl = ttk.Label(self.parent, text='scrpr4dou', anchor='center')
-    self.lbl.grid(column=1, row=1, sticky=(W, E))
+  def __widgets(self):
+    self.__subtitle()
+    self.__lbl1()
+    self.__entry1()
+    self.__lbl2()
+    self.__entry2()
+    self.__lbl3()
+    self.__combobox()
+    self.__lbl4()
+    self.__entry4()
+    self.__lbl5()
+    self.__entry5()
+    self.__lbl6()
+    self.__btn1()
+    self.__btn2()
+    self.__btn3()
+    self.__lbl7()
 
-  def subtitle(self):
-    self.lbl = ttk.Label(self.parent, text='Web Scraper para o DOU\n', anchor='center')
+  def __subtitle(self):
+    self.lbl = ttk.Label(self.parent, text='Web Scraper para o Diário Oficial da União\n', anchor='center')
     self.lbl.grid(column=1, row=2, stick=(W, E))
 
-  def lbl1(self):
+  def __lbl1(self):
     self.lbl = ttk.Label(self.parent, text = 'Data inicial (padrão 00/00/0000)')
     self.lbl.grid(column=1, row=3, sticky=(W, E))
     
-  def entry1(self):
+  def __entry1(self):
     self.entry1_value = StringVar()
     self.entry1_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry1_value)
     self.entry1_gui.grid(column=1, row=4, sticky=(W, E))
 
-  def lbl2(self):
+  def __lbl2(self):
     self.lbl = ttk.Label(self.parent, text = 'Data final (padrão 00/00/0000)')
     self.lbl.grid(column=1, row=5, sticky=(W, E))
 
-  def entry2(self):
+  def __entry2(self):
     self.entry2_value = StringVar()
     self.entry2_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry2_value)
     self.entry2_gui.grid(column=1, row=6, sticky=(W, E))
 
-  def lbl3(self):
+  def __lbl3(self):
     self.lbl = ttk.Label(self.parent, text='NoSQL')
     self.lbl.grid(column=1, row=7, sticky=(W, E)) 
 
-  def combobox(self):
+  def __combobox(self):
     self.combobox_value = StringVar()
     self.combobox_gui = ttk.Combobox(self.parent, textvariable=self.combobox_value, state='readonly')
     self.combobox_gui['values'] = ('Selecione...', 'MongoDB', 'Elasticsearch')
     self.combobox_gui.current(0)
     self.combobox_gui.grid(column=1, row=8, sticky=(W, E))
 
-  def lbl4(self):
+  def __lbl4(self):
     self.lbl = ttk.Label(self.parent, text='URL (padrão 0.0.0.0)')
     self.lbl.grid(column=1, row=9, sticky=(W, E))
 
-  def entry4(self):
+  def __entry4(self):
     self.entry4_value = StringVar()
     self.entry4_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry4_value)
     self.entry4_gui.grid(column=1, row=10, sticky=(W, E))
 
-  def lbl5(self):
+  def __lbl5(self):
     self.lbl = ttk.Label(self.parent, text='Porta')
     self.lbl.grid(column=1, row=11, sticky=(W, E))
 
-  def entry5(self):
+  def __entry5(self):
     self.entry5_value = StringVar()
     self.entry5_gui = ttk.Entry(self.parent, width=5, textvariable=self.entry5_value)
     self.entry5_gui.grid(column=1, row=12, sticky=(W, E))
 
-  def lbl6(self):
+  def __lbl6(self):
     self.lbl = ttk.Label(self.parent, text='')
     self.lbl.grid(column=1, row=13, sticky=(W, E))
  
-  def btn1(self):
+  def __btn1(self):
     self.btn1_gui = ttk.Button(self.parent, text='Baixar', command=self.__init_download)
     self.btn1_gui.grid(column=1, row=14, sticky=(W, E))
 
-  def btn2(self):
+  def __btn2(self):
     self.btn2_gui = ttk.Button(self.parent, text='Inserir', command=self.__init_ingest)
     self.btn2_gui.grid(column=1, row=15, sticky=(W, E))
     self.btn2_gui.state(['disabled'])
 
-  def btn3(self):
+  def __btn3(self):
     self.btn3_gui = ttk.Button(self.parent, text='Limpar', command=self.__clear_fields)
     self.btn3_gui.grid(column=1, row=16, sticky=(W, E))
 
-  def lbl7(self):
+  def __lbl7(self):
     self.lbl7_value = StringVar()
     self.lbl7_gui = ttk.Label(self.parent, textvariable=self.lbl7_value, anchor='center')
     self.lbl7_gui.grid(column=1, row=17, sticky=(W, E))
@@ -163,9 +161,36 @@ class Application:
     self.entry5_gui.state(['!disabled'])
     self.combobox_gui.state(['!disabled'])
 
+def show_help():
+  messagebox.showinfo('scrpr4dou - Ajuda', """
+  1) Insira a data inicial e a data final\n
+  * para download de apenas um dia, informe-o nos dois campos\n
+  2) Escolha um NoSQL caso queira armazenar o conteúdo baixado\n
+  3) Informe a URL para o NoSQL\n
+  4) Informe a porta para o NoSQL\n
+  * MongoDB, 27017; Elastic, 9200;\n
+  5) Clique em 'Baixar' e aguarde o download ser executado\n
+  6) Caso tenha seguido os passos 2, 3 e 4: clique em 'Inserir' para armazenar""")
+
+def show_about():
+  messagebox.showinfo('scrpr4dou - Sobre', """
+  Web Scraper específico para o Diário Oficial da União\n
+  Usando Python 3.x\n\n
+  Anddrei Ferreira\n
+  http://github.com/artaxexes""")
 
 if __name__ == '__main__':
   root = Tk()
   root.title('scrpr4dou')
   app = Application(root)
+  
+  menu_bar = Menu(root)
+  menu_options = Menu(menu_bar, tearoff=0)
+  menu_options.add_command(label='Ajuda', command=show_help)
+  menu_options.add_command(label='Sobre', command=show_about)
+  menu_options.add_separator()
+  menu_options.add_command(label='Sair', command=root.quit)
+  menu_bar.add_cascade(label='Opções', menu=menu_options)
+  root.config(menu=menu_bar)
+  
   root.mainloop()

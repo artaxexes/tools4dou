@@ -145,7 +145,8 @@ class Application:
     global col
     col = scrpr4dou.Collection(self.combobox_value.get(), self.entry4_value.get(), self.entry5_value.get(), self.entry1_value.get(), self.entry2_value.get())
     if col.to_local(datetime.datetime.now()):
-      self.btn2_gui.state(['!disabled'])
+      if self.combobox_value.get() != 'Selecione...':
+        self.btn2_gui.state(['!disabled'])
       messagebox.showinfo('scrpr4dou', 'Download concluído')
       self.lbl7_value.set('')
 
@@ -180,6 +181,7 @@ def show_help():
 
 def show_about():
   messagebox.showinfo('scrpr4dou - Sobre', """
+scrpr4dou v1.1\n
 Web Scraper específico para o Diário Oficial da União\n
 Usando Python 3.x\n\n
 Anddrei Ferreira\n

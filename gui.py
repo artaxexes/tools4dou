@@ -151,7 +151,8 @@ class Application:
       self.lbl7_value.set('')
 
   def __init_ingest(self):
-    self.lbl7_value.set('Inserindo...')
+    self.lbl7_value.set('\nInserindo...')
+    messagebox.showinfo('scrpr4dou', 'Iniciando inserção, aguarde...')
     self.btn2_gui.state(['disabled'])
     if col.to_nosql():
       messagebox.showinfo('scrpr4dou', 'Inserção concluída')

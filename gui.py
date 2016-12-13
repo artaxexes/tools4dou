@@ -46,7 +46,7 @@ class Application:
     
   def __entry1(self):
     self.entry1_value = StringVar()
-    self.entry1_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry1_value)
+    self.entry1_gui = ttk.Entry(self.parent, width=10, textvariable=self.entry1_value)
     self.entry1_gui.grid(column=1, row=4, sticky=(W, E))
 
   def __lbl2(self):
@@ -55,7 +55,7 @@ class Application:
 
   def __entry2(self):
     self.entry2_value = StringVar()
-    self.entry2_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry2_value)
+    self.entry2_gui = ttk.Entry(self.parent, width=10, textvariable=self.entry2_value)
     self.entry2_gui.grid(column=1, row=6, sticky=(W, E))
 
   def __lbl3(self):
@@ -75,7 +75,7 @@ class Application:
 
   def __entry4(self):
     self.entry4_value = StringVar()
-    self.entry4_gui = ttk.Entry(self.parent, width=30, textvariable=self.entry4_value)
+    self.entry4_gui = ttk.Entry(self.parent, width=15, textvariable=self.entry4_value)
     self.entry4_gui.grid(column=1, row=10, sticky=(W, E))
 
   def __lbl5(self):
@@ -109,9 +109,17 @@ class Application:
     self.lbl7_gui = ttk.Label(self.parent, textvariable=self.lbl7_value, anchor='center')
     self.lbl7_gui.grid(column=1, row=17, sticky=(W, E))
 
-  def __validates(self, dt_init, dt_final, url, port):
-    if re.search(r'^\d\d/\d\d/\d\d\d\d$', dt_init) and re.search(r'\d\d/\d\d/\d\d\d\d', dt_final) and re.search(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', url) and re.search(r'^\d{1,5}$', port):
+  def __validates(self, dt_init, dt_final, nosql, url, port):
+    bool_dt = (re.search(r'^\d\d/\d\d/\d\d\d\d$', dt_init) != None) and (re.search(r'^\d\d/\d\d/\d\d\d\d$', dt_final) != None)
+    bool_nosql = (nosql == 'Selecione...' and url == '' and port == '') or (nosql != 'Selecione...' and (re.search(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', url) != None) and (re.search(r'^\d{1,5}$', port) != None))
+    if bool_dt and bool_nosql:
       return True
+    msg = ''
+    if not bool_dt:
+      msg += '"Data inicial" ou "Data final" fora do padrão 00/00/0000\n'
+    if not bool_nosql:
+      msg += 'Verifique:\nSeleção do NoSQL\npadrão 0.0.0.0 para "URL"\nsomente números para "Porta"\n'
+    messagebox.showinfo('scrpr4dou', msg)
     return False
 
   def __clear_fields(self):
@@ -122,9 +130,7 @@ class Application:
     self.entry5_value.set('')
 
   def __init_download(self):
-    if not self.__validates(self.entry1_value.get(), self.entry2_value.get(), self.entry4_value.get(), self.entry5_value.get()):
-      messagebox.showinfo('scrpr4dou', 'Os campos estão vazios ou não estão no padrão requerido, a saber:\n* 00/00/0000 para datas\n* http://0.0.0.0:0 para URLs\n\nExemplos:\nData inicial: 23/01/2016\nData final: 25/01/2016\nURL: http://127.0.0.1:27017')
-      self.__clear_fields()
+    if not self.__validates(self.entry1_value.get(), self.entry2_value.get(), self.combobox_value.get(), self.entry4_value.get(), self.entry5_value.get()):
       return
     self.btn1_gui.state(['disabled'])
     self.btn2_gui.state(['disabled'])
@@ -163,21 +169,21 @@ class Application:
 
 def show_help():
   messagebox.showinfo('scrpr4dou - Ajuda', """
-  1) Insira a data inicial e a data final\n
-  * para download de apenas um dia, informe-o nos dois campos\n
-  2) Escolha um NoSQL caso queira armazenar o conteúdo baixado\n
-  3) Informe a URL para o NoSQL\n
-  4) Informe a porta para o NoSQL\n
-  * MongoDB, 27017; Elastic, 9200;\n
-  5) Clique em 'Baixar' e aguarde o download ser executado\n
-  6) Caso tenha seguido os passos 2, 3 e 4: clique em 'Inserir' para armazenar""")
+1) Insira a data inicial e a data final\n
+* para download de apenas um dia, informe-o nos dois campos\n
+2) Escolha um NoSQL caso queira armazenar o conteúdo baixado\n
+3) Informe a URL para o NoSQL\n
+4) Informe a porta para o NoSQL\n
+* MongoDB, 27017; Elastic, 9200;\n
+5) Clique em 'Baixar' e aguarde o download ser executado\n
+6) Caso tenha seguido os passos 2, 3 e 4: clique em 'Inserir' para armazenar""")
 
 def show_about():
   messagebox.showinfo('scrpr4dou - Sobre', """
-  Web Scraper específico para o Diário Oficial da União\n
-  Usando Python 3.x\n\n
-  Anddrei Ferreira\n
-  http://github.com/artaxexes""")
+Web Scraper específico para o Diário Oficial da União\n
+Usando Python 3.x\n\n
+Anddrei Ferreira\n
+http://github.com/artaxexes""")
 
 if __name__ == '__main__':
   root = Tk()

@@ -109,4 +109,5 @@ class Collection:
       client.close()
       return True
     elif self.__nosql_name == 'Elasticsearch':
-      return False
+      return True
+    return False

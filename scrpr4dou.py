@@ -14,13 +14,12 @@ class Collection:
   """ set of dou pages """
 
   def __init__(self, nosql_name, nosql_url, nosql_port, date_initial, date_final):
-    """ public members """
-    self.nosql_name = nosql_name
-    self.nosql_url = nosql_url
-    self.nosql_port = nosql_port
-    self.date_initial = date_initial
-    self.date_final = date_final
     """ private members """
+    self.__nosql_name = nosql_name
+    self.__nosql_url = nosql_url
+    self.__nosql_port = nosql_port
+    self.__date_initial = date_initial
+    self.__date_final = date_final
     self.__dou_url = 'http://pesquisa.in.gov.br/imprensa'
     self.__coding = 'ISO-8859-1'
     self.__mask_type = ('dot_folder', 'slash', 'dot_file')
@@ -88,7 +87,7 @@ class Collection:
     global folder
     folder  = self.__date_time_mask(path, self.__mask_type[0])
     os.mkdir(folder)
-    urls = self.__mount_url(self.date_initial, self.date_final)
+    urls = self.__mount_url(self.__date_initial, self.__date_final)
     for url in urls:
       filepath = folder + '/' + self.__date_time_mask(self.__str_to_date(url[0]), self.__mask_type[2]) + 'cad' + url[1] + 'pg' + url[2] + '.pdf'
       urllib.request.urlretrieve(url[3], filepath)
@@ -96,9 +95,9 @@ class Collection:
 
   def to_nosql(self):
     files = os.listdir(folder)
-    if self.nosql_name == 'MongoDB':
+    if self.__nosql_name == 'MongoDB':
       # mongodb
-      mongo_conf = (self.nosql_url, int(self.nosql_port), 'dou', folder)
+      mongo_conf = (self.__nosql_url, int(self.__nosql_port), 'dou', folder)
       client = pymongo.MongoClient(mongo_conf[0], mongo_conf[1])
       db = client[mongo_conf[2]]
       collection = db[mongo_conf[3]]
@@ -109,5 +108,5 @@ class Collection:
         result = collection.insert_one({'file':f, 'folder':folder, 'content':content})
       client.close()
       return True
-    elif self.nosql_name == 'Elasticsearch':
+    elif self.__nosql_name == 'Elasticsearch':
       return False

@@ -1,4 +1,10 @@
 #
+# macOS
+#
+
+.DS_Store
+
+#
 # python .gitignore
 #
 

@@ -13,13 +13,13 @@ class Collection:
 
   """ set of dou pages """
 
-  def __init__(self, nosql_name, nosql_url, nosql_port, date_initial, date_final):
+  def __init__(self, nosql, url, port, dt_init, dt_final):
     """ private members """
-    self.__nosql_name = nosql_name
-    self.__nosql_url = nosql_url
-    self.__nosql_port = nosql_port
-    self.__date_initial = date_initial
-    self.__date_final = date_final
+    self.__nosql_name = nosql
+    self.__nosql_url = url
+    self.__nosql_port = port
+    self.__date_initial = dt_init
+    self.__date_final = dt_final
     self.__dou_url = 'http://pesquisa.in.gov.br/imprensa'
     self.__coding = 'ISO-8859-1'
     self.__mask_type = ('dot_folder', 'slash', 'dot_file')

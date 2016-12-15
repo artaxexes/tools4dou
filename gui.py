@@ -110,13 +110,21 @@ class Application:
     self.lbl7_gui.grid(column=1, row=17, sticky=(W, E))
 
   def __validates(self, dt_init, dt_final, nosql, url, port):
-    bool_dt = (re.search(r'^\d\d/\d\d/\d\d\d\d$', dt_init) != None) and (re.search(r'^\d\d/\d\d/\d\d\d\d$', dt_final) != None)
+    bool_dt = False
+    if re.search(r'^\d\d/\d\d/\d\d\d\d$', dt_init) != None and re.search(r'^\d\d/\d\d/\d\d\d\d$', dt_final) != None:
+      try:
+        dt = datetime.date(int(dt_init[6:10]), int(dt_init[3:5]), int(dt_init[:2]))
+        dt = datetime.date(int(dt_final[6:10]), int(dt_final[3:5]), int(dt_final[:2]))
+      except ValueError:
+        pass
+      else:
+        bool_dt = True
     bool_nosql = (nosql == 'Selecione...' and url == '' and port == '') or (nosql != 'Selecione...' and (re.search(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', url) != None) and (re.search(r'^\d{1,5}$', port) != None))
     if bool_dt and bool_nosql:
       return True
     msg = ''
     if not bool_dt:
-      msg += '"Data inicial" ou "Data final" fora do padrão 00/00/0000\n'
+      msg += '"Data inicial" ou "Data final" inválida ou fora do padrão 00/00/0000\n'
     if not bool_nosql:
       msg += 'Verifique:\nSeleção do NoSQL\npadrão 0.0.0.0 para "URL"\nsomente números para "Porta"\n'
     messagebox.showinfo('scrpr4dou', msg)

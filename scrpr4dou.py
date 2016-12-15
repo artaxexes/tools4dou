@@ -109,5 +109,13 @@ class Collection:
       client.close()
       return True
     elif self.__nosql_name == 'Elasticsearch':
+      # elasticsearch
+      idx = 'dou_' + folder
+      es = elasticsearch.Elasticsearch(self.__nosql_url + ':' + self.__nosql_port)
+      for f in files:
+        pdf = PyPDF2.PdfFileReader(folder + '/' + f)
+        content = pdf.getPage(0).extractText()
+        doc = {'file':f, 'folder':folder, 'content':content}
+        result = es.index(index=idx, doc_type='dou_page', body=doc)
       return True
     return False

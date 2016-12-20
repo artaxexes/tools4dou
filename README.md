@@ -1,7 +1,10 @@
-# scrpr4dou
+## scrpr4dou
 
-#### [pt-br]
-web scraper específico para o jornal oficial do governo federal brasileiro, o diário oficial da união.
+
+
+### [pt-br]
+
+web scraper específico para o jornal oficial do governo federal brasileiro, o diário oficial da união
 
 para executar:
 
@@ -17,5 +20,22 @@ para executar:
    $ ./gui.py
    ```
 
-#### [en-us]
+
+
+### [en-us]
+
 specific web scraper for official journal of the federal government of brazil
+
+run:
+
+1. install requirements
+
+   ```sh
+   $ pip install -r requirements.txt
+   ```
+
+2. run the gui file, gui.py
+
+   ```sh
+   $ ./gui.py
+   ```

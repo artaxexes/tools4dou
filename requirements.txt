@@ -1,10 +1,6 @@
-# pip install -r requirements.txt
-
-os
-datetime
-tkinter
-re
-urllib.request
-pymongo
-elasticsearch
-PyPDF2
+# dependencies
+# usage:
+#   $ pip install -r requirements.txt
+elasticsearch==5.0.1
+pymongo==3.4.0
+PyPDF2==1.26.0

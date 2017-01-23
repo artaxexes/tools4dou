@@ -182,19 +182,18 @@ def show_help():
 1) Insira a data inicial e a data final\n
 * para download de apenas um dia, informe-o nos dois campos\n
 2) Escolha um NoSQL caso queira armazenar o conteúdo baixado\n
-3) Informe a URL para o NoSQL\n
-4) Informe a porta para o NoSQL\n
-* MongoDB, 27017; Elastic, 9200;\n
-5) Clique em 'Baixar' e aguarde o download ser executado\n
-6) Caso tenha seguido os passos 2, 3 e 4: clique em 'Inserir' para armazenar""")
+  2.1) Informe a URL para o NoSQL\n
+  2.2) Informe a porta para o NoSQL\n
+  * MongoDB, 27017; Elastic, 9200;\n
+3) Clique em 'Baixar' e aguarde o download ser executado\n
+Obs: caso tenha seguido o passo 2: clique em 'Inserir' para armazenar""")
 
 def show_about():
   messagebox.showinfo('scrpr4dou - Sobre', """
-scrpr4dou v1.1\n
-Web Scraper específico para o Diário Oficial da União\n
-Usando Python 3.x\n\n
-Anddrei Ferreira\n
-http://github.com/artaxexes""")
+scrpr4dou v1.1\n\n
+Licença GPL-3.0\n\n
+Repositório:\n
+github.com/artaxexes/tools4dou\n""")
 
 if __name__ == '__main__':
   root = Tk()
